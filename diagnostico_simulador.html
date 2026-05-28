@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico — Simulador Sisloc Reforma Tributária V3.4</title>
+    <style>
+        :root {
+            --primary: #004085;
+            --primary-light: #0056b3;
+            --accent: #f64f00;
+            --red: #dc3545;
+            --red-light: #fff5f5;
+            --orange: #e65c00;
+            --orange-light: #fff8f0;
+            --yellow: #856404;
+            --yellow-light: #fffbe6;
+            --green: #155724;
+            --green-light: #f0fff4;
+            --surface: #ffffff;
+            --surface-alt: #f8f9fa;
+            --border: #dee2e6;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--surface-alt);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0 0 60px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #002952 100%);
+            color: white;
+            padding: 40px 24px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .header-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        .header h1 {
+            font-size: 1.9em;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        .header-meta span { display: flex; align-items: center; gap: 5px; }
+
+        /* ── CONTAINER ── */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ── SCORECARD ── */
+        .scorecard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: -24px 0 32px;
+            position: relative;
+            z-index: 10;
+        }
+        .score-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 18px 16px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border-top: 4px solid transparent;
+        }
+        .score-card.red  { border-top-color: var(--red); }
+        .score-card.orange { border-top-color: var(--orange); }
+        .score-card.yellow { border-top-color: #ffc107; }
+        .score-card.green  { border-top-color: #28a745; }
+        .score-number {
+            font-size: 2.4em;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .score-card.red .score-number    { color: var(--red); }
+        .score-card.orange .score-number { color: var(--orange); }
+        .score-card.yellow .score-number { color: #856404; }
+        .score-card.green .score-number  { color: #28a745; }
+        .score-label {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── SECTIONS ── */
+        .section {
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── FINDING CARDS ── */
+        .finding {
+            background: white;
+            border-radius: var(--radius);
+            border-left: 5px solid transparent;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+        .finding.critical { border-left-color: var(--red); background: #fffbfb; }
+        .finding.high     { border-left-color: var(--orange); background: #fffcfa; }
+        .finding.medium   { border-left-color: #ffc107; background: #fffef5; }
+        .finding.ok       { border-left-color: #28a745; background: #f8fff9; }
+
+        .finding-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .finding-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .finding.critical .finding-badge { background: #fde8e8; color: #c0392b; }
+        .finding.high .finding-badge     { background: #fde8d4; color: #b94a00; }
+        .finding.medium .finding-badge   { background: #fef9e7; color: #856404; }
+        .finding.ok .finding-badge       { background: #d4edda; color: #155724; }
+
+        .finding-title {
+            font-weight: 700;
+            font-size: 1em;
+            color: var(--text);
+            flex: 1;
+        }
+        .finding-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .finding-tag {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.78em;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+        .finding-tag.new-tag { background: #e8f4f8; border-color: #bee5eb; color: #0c5460; }
+        .finding-tag.confirmed-tag { background: #e8eaf6; border-color: #b0bec5; color: #37474f; }
+
+        .finding-body p {
+            font-size: 0.92em;
+            color: #444;
+            margin-bottom: 8px;
+        }
+        .finding-body code {
+            background: #f4f4f4;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88em;
+            color: #c7254e;
+        }
+        .finding-body pre {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            font-size: 0.82em;
+            overflow-x: auto;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .finding-body pre .comment { color: #6c7086; }
+        .finding-body pre .keyword { color: #cba6f7; }
+        .finding-body pre .string  { color: #a6e3a1; }
+        .finding-body pre .number  { color: #fab387; }
+
+        .action-box {
+            background: var(--surface-alt);
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 10px;
+            font-size: 0.88em;
+        }
+        .action-box strong { color: var(--primary); }
+
+        /* ── CONSULTANT FEEDBACK ── */
+        .consultant-card {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            border: 1px solid #b8daff;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+        .consultant-card h4 {
+            color: var(--primary);
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .consultant-card p { font-size: 0.9em; color: #444; }
+        .status-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .pill-absent  { background: #fde8e8; color: #c0392b; }
+        .pill-partial { background: #fde8d4; color: #b94a00; }
+        .pill-ok      { background: #d4edda; color: #155724; }
+
+        /* ── TABLE ── */
+        .findings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86em;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .findings-table thead tr {
+            background: var(--primary);
+            color: white;
+        }
+        .findings-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        .findings-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .findings-table tr:last-child td { border-bottom: none; }
+        .findings-table tr:nth-child(even) td { background: #fafafa; }
+        .findings-table td code { font-size: 0.85em; }
+        .sev-icon { font-size: 1.1em; }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+        .info-box h4 { color: var(--primary); margin-bottom: 6px; font-size: 0.95em; }
+        .info-box p, .info-box li { font-size: 0.9em; color: #444; }
+        .info-box ul { padding-left: 18px; }
+        .info-box li { margin-bottom: 4px; }
+
+        /* ── VERDICT ── */
+        .verdict-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border: 2px solid #ffc107;
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .verdict-box .verdict-label {
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #856404;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+        .verdict-box .verdict-text {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #533f03;
+        }
+        .verdict-box .verdict-sub {
+            font-size: 0.9em;
+            color: #856404;
+            margin-top: 8px;
+        }
+
+        /* ── FOOTER ── */
+        .report-footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.82em;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .header h1 { font-size: 1.4em; }
+            .scorecard { grid-template-columns: repeat(2, 1fr); }
+            .findings-table { font-size: 0.78em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="container">
+        <div class="header-badge">Relatório de Diagnóstico</div>
+        <h1>Simulador Sisloc — Reforma Tributária</h1>
+        <div class="subtitle">Análise técnica e fiscal completa · Versão 3.4</div>
+        <div class="header-meta">
+            <span>📅 27 de maio de 2026</span>
+            <span>📂 Simulador_V3_4.html</span>
+            <span>⚖️ Base legal: LC 214/2025</span>
+            <span>🤖 Revisado por agente revisor-fiscal</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SCORECARD -->
+    <div class="scorecard">
+        <div class="score-card red">
+            <div class="score-number">2</div>
+            <div class="score-label">🔴 Crítico</div>
+        </div>
+        <div class="score-card orange">
+            <div class="score-number">3</div>
+            <div class="score-label">🟠 Alto</div>
+        </div>
+        <div class="score-card yellow">
+            <div class="score-number">3</div>
+            <div class="score-label">🟡 Médio</div>
+        </div>
+        <div class="score-card green">
+            <div class="score-number">5</div>
+            <div class="score-label">✅ Correto</div>
+        </div>
+    </div>
+
+    <!-- VEREDICTO GERAL -->
+    <div class="verdict-box">
+        <div class="verdict-label">Veredicto geral</div>
+        <div class="verdict-text">⚠️ REPROVADO — Correções obrigatórias</div>
+        <div class="verdict-sub">
+            2 bugs críticos e 3 inconsistências altas comprometem a confiabilidade da ferramenta.<br>
+            Os cálculos do cenário atual e do cenário futuro estão matematicamente corretos.<br>
+            As falhas são de modelagem, informação ao usuário e omissão de contexto tributário.
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 1 — ACHADOS CRÍTICOS -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">🔴 Bugs Críticos (2)</div>
+
+        <!-- FINDING 1 -->
+        <div class="finding critical">
+            <div class="finding-header">
+                <span class="finding-badge">🔴 Crítico</span>
+                <div class="finding-title">Anexo III usa alíquotas nominais, não efetivas</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linhas 881–888 (array) e 919–927 (modal)</span>
+                <span class="finding-tag confirmed-tag">Bug documentado — confirmado</span>
+                <span class="finding-tag">LC 123/2006, Anexo III</span>
+            </div>
+            <div class="finding-body">
+                <p>O array <code>ANEXO_III</code> armazena a alíquota nominal bruta do Simples Nacional (ex: <code>das: 33.00</code> para a faixa 6). A alíquota exibida no modal e aplicada ao cálculo está <strong>incorreta para as faixas 3 a 6</strong>. A lei exige a fórmula de alíquota efetiva:</p>
+                <pre><code><span class="comment">// Correto — LC 123/2006, Anexo III</span>
+aliqEfetiva = (RBT12 × aliqNominal − PD) / RBT12
+
+<span class="comment">// Exemplo: faixa 6 com RBT12 = R$ 4.200.000</span>
+<span class="comment">// nominal: 33%  |  PD: 648.000</span>
+efetiva = (4.200.000 × 0,33 − 648.000) / 4.200.000
+efetiva = <span class="number">17,57%</span>  <span class="comment">← o simulador exibe 33% — erro de 15pp</span></code></pre>
+                <p>O erro se propaga diretamente para o cálculo de <code>baseSemIVA</code> e <code>precoFuturo</code> quando o usuário usa o botão "Aplicar" do modal. Para a faixa 6, o preço futuro fica superestimado em proporção ao erro de 15 pontos percentuais.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Adicionar coluna <code>pd</code> (parcela a deduzir) ao array <code>ANEXO_III</code> e recalcular as colunas <code>consumo</code> e <code>renda</code> com a fórmula efetiva. Alternativamente, exibir a tabela apenas como referência nominal e orientar o usuário a inserir a alíquota efetiva calculada pelo PGDAS-D.
+            </div>
+        </div>
+
+        <!-- FINDING 2 -->
+        <div class="finding critical">
+            <div class="finding-header">
+                <span class="finding-badge">🔴 Crítico</span>
+                <div class="finding-title">Cronograma de transição ausente — CBS 2027 vs. IBS 2028–2032</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linhas 1068–1083 (calcular)</span>
+                <span class="finding-tag new-tag">Novo achado</span>
+                <span class="finding-tag">EC 132/2023 · LC 214/2025</span>
+            </div>
+            <div class="finding-body">
+                <p>O simulador trata o cenário futuro como <strong>"regime pleno de 2033"</strong> em todos os cálculos, aplicando sempre <code>aliqCBS + aliqIBS</code> como se ambos estivessem em vigor simultaneamente. O consultor fiscal externo apontou esta omissão como impacto relevante para a ferramenta comercial.</p>
+                <p>O cronograma legal é:</p>
+                <ul style="padding-left:18px; margin:8px 0; font-size:0.9em;">
+                    <li><strong>2026:</strong> Teste CBS/IBS a alíquotas reduzidas (0,1%)</li>
+                    <li><strong>2027:</strong> CBS pleno (substitui PIS/COFINS); IBS ainda inexistente</li>
+                    <li><strong>2028–2032:</strong> IBS escalonado (1/6 por ano a partir de 2029); ICMS/ISS reduzidos proporcionalmente</li>
+                    <li><strong>2033:</strong> IBS pleno; extinção definitiva de ICMS e ISS</li>
+                </ul>
+                <p>Consequência: para simulações de 2027 (CBS em vigor, sem IBS), a carga tributária futura está <strong>superestimada em 17,7 pontos percentuais</strong>. Clientes podem não precisar reajustar preços em 2027 se o consultor não souber desta distinção.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação sugerida:</strong> Adicionar seletor "Ano de referência" (2027, 2028–2030, 2031–2032, 2033) e aplicar fatores de escalonamento ao IBS. No mínimo, adicionar disclaimer textual explicando que o simulador projeta o regime <em>pleno de 2033</em>.
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 2 — INCONSISTÊNCIAS ALTAS -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">🟠 Inconsistências Altas (3)</div>
+
+        <!-- FINDING 3 -->
+        <div class="finding high">
+            <div class="finding-header">
+                <span class="finding-badge">🟠 Alto</span>
+                <div class="finding-title"><code>warningPresumido</code> com condição incompleta</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linha 1004</span>
+                <span class="finding-tag confirmed-tag">Bug documentado — confirmado</span>
+            </div>
+            <div class="finding-body">
+                <p>O aviso sobre o regime Presumido (PIS/COFINS cumulativo, sem transferência de crédito) dispara somente quando <code>regimeCliente === 'real_com_credito'</code>. O correto é disparar para qualquer combinação de cliente, já que <strong>nenhum cliente toma crédito de PIS/COFINS quando a locadora é Presumida</strong> — independentemente do regime do cliente.</p>
+                <pre><code><span class="comment">// Código atual — incorreto</span>
+<span class="keyword">if</span> (regimeLocadora === <span class="string">'presumido'</span> && regimeCliente === <span class="string">'real_com_credito'</span>) {
+    warnPresumido.classList.add(<span class="string">'active'</span>);
+}
+
+<span class="comment">// Correto</span>
+<span class="keyword">if</span> (regimeLocadora === <span class="string">'presumido'</span>) {
+    warnPresumido.classList.add(<span class="string">'active'</span>);
+} <span class="keyword">else</span> {
+    warnPresumido.classList.remove(<span class="string">'active'</span>);
+}</code></pre>
+                <p>Impacto: usuário Presumido com cliente <code>real_sem_credito</code>, <code>presumido</code> ou <code>simples_nc</code> não recebe o aviso e pode interpretar incorretamente o campo "Custo final do cliente".</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Alterar a condição do <code>if</code> para verificar apenas <code>regimeLocadora === 'presumido'</code>, sem a restrição ao regime do cliente.
+            </div>
+        </div>
+
+        <!-- FINDING 4 -->
+        <div class="finding high">
+            <div class="finding-header">
+                <span class="finding-badge">🟠 Alto</span>
+                <div class="finding-title">Simples Simplificado aplica alíquotas plenas CBS/IBS</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linha 1048</span>
+                <span class="finding-tag confirmed-tag">Bug documentado — confirmado</span>
+                <span class="finding-tag">LC 214/2025, art. 16</span>
+            </div>
+            <div class="finding-body">
+                <p>Os branches <code>simplificado</code> e <code>nao_cumulativo</code> aplicam exatamente as mesmas alíquotas (<code>cbsEst</code> e <code>ibsEst</code>). A LC 214/2025 prevê alíquotas reduzidas específicas para o Simples Simplificado — ainda pendentes de regulamentação pelo Comitê Gestor do IBS.</p>
+                <p>O simulador sobreestima sistematicamente a carga do Simplificado. Não há nota ao usuário sobre essa incerteza regulatória.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Manter as alíquotas plenas como proxy enquanto a regulamentação não sai, mas adicionar disclaimer explícito: <em>"Alíquotas reduzidas do Simples Simplificado pendentes de regulamentação pelo Comitê Gestor. Valores estimados com alíquotas plenas."</em>
+            </div>
+        </div>
+
+        <!-- FINDING 5 -->
+        <div class="finding high">
+            <div class="finding-header">
+                <span class="finding-badge">🟠 Alto</span>
+                <div class="finding-title">Crédito presumido do Simples Simplificado (cliente) ignorado sem aviso</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linha 1087</span>
+                <span class="finding-tag new-tag">Novo achado</span>
+                <span class="finding-tag">LC 214/2025</span>
+            </div>
+            <div class="finding-body">
+                <p>O array <code>regimesQueTomamCredito</code> não inclui <code>simples_sim</code>, portanto <code>valorCreditoFuturo = 0</code> para clientes Simples Simplificado. A LC 214/2025 prevê crédito presumido para esse regime (percentual ainda pendente de regulamentação).</p>
+                <pre><code><span class="comment">// Atual — simples_sim excluído</span>
+<span class="keyword">const</span> regimesQueTomamCredito = [
+    <span class="string">'real_com_credito'</span>, <span class="string">'real_sem_credito'</span>,
+    <span class="string">'presumido'</span>, <span class="string">'simples_nc'</span>
+    <span class="comment">// 'simples_sim' ausente — crédito presumido não computado</span>
+];</code></pre>
+                <p>O usuário pode interpretar que "Simples Simplificado não tem crédito futuro", o que é <strong>incorreto</strong>. A omissão é conservadora (superestima o custo), mas induz a erro de percepção sobre a reforma.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Incluir <code>simples_sim</code> com crédito presumido parametrizável (valor zero até regulamentação) ou adicionar um disclaimer específico no <code>boxAnalysis</code> para este cenário explicando que o crédito existe mas aguarda regulamentação.
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 3 — ACHADOS MÉDIOS -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">🟡 Fragilidades Médias (3)</div>
+
+        <!-- FINDING 6 -->
+        <div class="finding medium">
+            <div class="finding-header">
+                <span class="finding-badge">🟡 Médio</span>
+                <div class="finding-title">Label "com crédito" estático exibido mesmo sem crédito</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linha 791 (HTML)</span>
+                <span class="finding-tag new-tag">Novo achado</span>
+            </div>
+            <div class="finding-body">
+                <p>O rótulo <code>"Custo final do cliente (com crédito)"</code> é estático no HTML. Quando a locadora é Presumida ou Simples (ou quando o cliente não toma crédito), o valor em <code>resCustoRealAtual</code> é igual ao preço bruto (crédito = zero). O label "com crédito" induz interpretação incorreta sobre a existência de créditos.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Tornar o label dinâmico via JS: alternar entre "Custo final do cliente (sem crédito PIS/COFINS)" e "Custo final do cliente (descontado crédito PIS/COFINS)" conforme <code>creditoPisCofinsHoje > 0</code>.
+            </div>
+        </div>
+
+        <!-- FINDING 7 -->
+        <div class="finding medium">
+            <div class="finding-header">
+                <span class="finding-badge">🟡 Médio</span>
+                <div class="finding-title">ID <code>rowRefImposto</code> definido no HTML, nunca referenciado no JS</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linha 821 (HTML)</span>
+                <span class="finding-tag new-tag">Novo achado</span>
+            </div>
+            <div class="finding-body">
+                <p>O elemento <code>id="rowRefImposto"</code> existe no HTML mas nenhum <code>getElementById('rowRefImposto')</code> aparece no JavaScript. É funcionalmente correto por acidente (o elemento nunca precisa ser ocultado hoje), mas o ID morto cria risco de manutenção: qualquer desenvolvedor que precise controlar a visibilidade dessa linha não encontrará o padrão esperado.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Remover o ID do HTML ou adicionar o <code>getElementById</code> correspondente no JS para consistência com o padrão do arquivo.
+            </div>
+        </div>
+
+        <!-- FINDING 8 -->
+        <div class="finding medium">
+            <div class="finding-header">
+                <span class="finding-badge">🟡 Médio</span>
+                <div class="finding-title">Inputs extremos causam falhas silenciosas</div>
+            </div>
+            <div class="finding-meta">
+                <span class="finding-tag">Linhas 1064 e 1073</span>
+                <span class="finding-tag new-tag">Novo achado</span>
+            </div>
+            <div class="finding-body">
+                <p><strong>Cenário 1:</strong> <code>aliqSimplesRenda ≥ 100%</code> — a guarda <code>aliqRendaFrac &lt; 1</code> evita divisão por zero, mas o fallback retorna <code>receitaLiquida</code> diretamente, ignorando a parcela renda. Resultado parece válido mas está incorreto, sem mensagem de erro.</p>
+                <p><strong>Cenário 2:</strong> soma das alíquotas atuais <code>&gt; 100%</code> (ex: PIS 60% + ICMS 50%) — <code>receitaLiquida</code> fica negativa. O <code>precoFuturo</code> também fica negativo e é exibido como "R$ -X.XXX,XX" sem alerta ao usuário. Os campos têm <code>min="0"</code> por campo, mas não há validação da soma total.</p>
+            </div>
+            <div class="action-box">
+                <strong>Ação:</strong> Adicionar validação da soma total das alíquotas. Se <code>aliqTotal ≥ 100</code>, exibir aviso e suprimir os resultados. Para <code>aliqSimplesRenda ≥ 100</code>, tratar como erro de input explícito.
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 4 — ASPECTOS CORRETOS -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">✅ Aspectos Verificados e Corretos (5)</div>
+
+        <div class="finding ok">
+            <div class="finding-header">
+                <span class="finding-badge">✅ Correto</span>
+                <div class="finding-title">Invariante de receita líquida preservada em todos os regimes</div>
+            </div>
+            <div class="finding-meta"><span class="finding-tag">Linhas 1064, 1077, 1083</span></div>
+            <div class="finding-body">
+                <p><code>receitaLiquida = precoAtual − impostoAtualValor</code> é calculada corretamente. O <code>precoFuturo</code> é <strong>derivado</strong> desta base em todos os branches (Presumido, Real, Simples). Não há cálculo isolado do preço futuro sem respeitar a invariante. Validado pelo consultor fiscal externo.</p>
+            </div>
+        </div>
+
+        <div class="finding ok">
+            <div class="finding-header">
+                <span class="finding-badge">✅ Correto</span>
+                <div class="finding-title">IVA "por fora" aplicado corretamente</div>
+            </div>
+            <div class="finding-meta"><span class="finding-tag">Linhas 1077 e 1083</span></div>
+            <div class="finding-body">
+                <p>Em ambos os branches, o IVA é somado à base (<code>precoFuturo = baseSemIVA + valorIVA</code>), não embutido como os tributos atuais. Implementação correta da metodologia "por fora" da LC 214/2025.</p>
+            </div>
+        </div>
+
+        <div class="finding ok">
+            <div class="finding-header">
+                <span class="finding-badge">✅ Correto</span>
+                <div class="finding-title">Crédito PIS/COFINS hoje: somente Lucro Real + Lucro Real</div>
+            </div>
+            <div class="finding-meta"><span class="finding-tag">Linha 1031</span></div>
+            <div class="finding-body">
+                <p>Crédito PIS/COFINS hoje existe apenas quando <code>locadora=Real</code> E <code>cliente=real_com_credito</code>. Presumido usa regime cumulativo (Lei 9.718/98, art. 8º) — sem crédito. Simples também sem crédito. Implementação correta.</p>
+            </div>
+        </div>
+
+        <div class="finding ok">
+            <div class="finding-header">
+                <span class="finding-badge">✅ Correto</span>
+                <div class="finding-title">Crédito IVA futuro: Presumido e Real sem crédito incluídos</div>
+            </div>
+            <div class="finding-meta"><span class="finding-tag">Linha 1087</span></div>
+            <div class="finding-body">
+                <p><code>regimesQueTomamCredito</code> inclui corretamente <code>real_sem_credito</code> e <code>presumido</code>. Isso reflete a eliminação da distinção insumo/consumo pela LC 214/2025 — todos os regimes passam a ter direito a crédito de IVA na reforma.</p>
+            </div>
+        </div>
+
+        <div class="finding ok">
+            <div class="finding-header">
+                <span class="finding-badge">✅ Correto</span>
+                <div class="finding-title">Separação renda/consumo no Simples Nacional</div>
+            </div>
+            <div class="finding-meta"><span class="finding-tag">Linhas 1068–1077</span></div>
+            <div class="finding-body">
+                <p>A parcela de renda (IRPJ/CSLL/CPP) permanece no DAS pós-reforma. A fórmula <code>baseSemIVA = receitaLiquida / (1 − aliqRendaFrac)</code> está matematicamente correta para isolar a base tributável pelo IVA. Validado pelo consultor fiscal externo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 5 — FEEDBACK DO CONSULTOR -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">💼 Feedback do Consultor Fiscal Externo</div>
+
+        <div class="info-box">
+            <h4>Contexto</h4>
+            <p>O simulador foi avaliado por um consultor fiscal externo especializado em reforma tributária. O consultor confirmou que os cálculos estão matematicamente corretos ("por dentro") em todos os cenários. Os pontos abaixo são observações sobre contextualização, completude e oportunidades de diferenciação comercial da ferramenta.</p>
+        </div>
+
+        <div class="consultant-card">
+            <h4>📌 Ponto 1 — Cronograma de transição CBS vs. IBS
+                <span class="status-pill pill-absent">Ausente no simulador</span>
+            </h4>
+            <p>CBS entra em 2027 (substitui PIS/COFINS integralmente). IBS entra gradualmente entre 2028 e 2032 (extinção de ICMS/ISS apenas em 2033). O simulador atual não distingue os anos de transição — projeta sempre o regime pleno de 2033. Clientes da locadora <strong>podem não precisar de reajuste em 2027</strong> se o IBS ainda não estiver vigente. A ausência desta contextualização pode gerar expectativas erradas nas negociações comerciais.</p>
+        </div>
+
+        <div class="consultant-card">
+            <h4>📌 Ponto 2 — IVA Dual: CBS+IBS aplicados conjuntamente a partir de 2028
+                <span class="status-pill pill-partial">Parcialmente tratado</span>
+            </h4>
+            <p>Na metodologia do IVA Dual, CBS e IBS são aplicados em conjunto. O aumento real de carga tributária começa em 2028, quando o IBS entra em escalonamento. O simulador calcula a carga conjunta corretamente para o regime pleno, mas não oferece visão do impacto por ano de transição.</p>
+        </div>
+
+        <div class="consultant-card">
+            <h4>📌 Ponto 3 — Impacto diferencial por regime: Presumido e Simples são os mais beneficiados
+                <span class="status-pill pill-partial">Calculado, mas não comunicado</span>
+            </h4>
+            <p><strong>Lucro Real</strong> é o menos impactado: já possui créditos de PIS/COFINS hoje. A cadeia de creditamento do IVA muda a estrutura, mas o impacto líquido é menor.</p>
+            <p style="margin-top:8px;"><strong>Lucro Presumido e Simples Nacional</strong> atualmente não têm créditos de PIS/COFINS (regime cumulativo / regime Simples). Isso cria uma distância maior entre o cenário atual e o novo — e essa distância é <em>positiva</em> para os clientes desses regimes, pois passam a ter acesso a crédito de IVA que antes não existia. Este é um <strong>argumento comercial relevante</strong> que o simulador calcula numericamente, mas <strong>não contextualiza de forma didática</strong> para o usuário.</p>
+        </div>
+
+        <div class="info-box">
+            <h4>Recomendações derivadas do feedback</h4>
+            <ul>
+                <li>Adicionar seletor de <strong>ano de referência</strong> (pelo menos 2027 vs. 2033) para contextualizar o cronograma da reforma.</li>
+                <li>No <code>boxAnalysis</code>, incluir contextualização textual sobre <strong>por que</strong> o custo caiu ou subiu — especialmente para Presumido e Simples, onde a eliminação da cumulatividade é o fator central.</li>
+                <li>Adicionar seção educativa explicando que Lucro Real já tem créditos hoje (menor impacto) e que Presumido/Simples ganham créditos que não tinham (maior benefício relativo).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 6 — TABELA RESUMO -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">📊 Tabela Resumo de Achados</div>
+
+        <div style="overflow-x:auto;">
+        <table class="findings-table">
+            <thead>
+                <tr>
+                    <th>Sev.</th>
+                    <th>Linha(s)</th>
+                    <th>Achado</th>
+                    <th>Tipo</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="sev-icon">🔴</span></td>
+                    <td><code>881–888, 919–927</code></td>
+                    <td>Anexo III usa alíquota nominal; faixa 6 exibe 33% em vez de ~17,57%</td>
+                    <td>Documentado</td>
+                    <td>Recalcular com PD</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🔴</span></td>
+                    <td><code>1068–1083</code></td>
+                    <td>Ausência de cronograma de transição CBS 2027 / IBS 2028–2032</td>
+                    <td>Novo</td>
+                    <td>Seletor de ano</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟠</span></td>
+                    <td><code>1004</code></td>
+                    <td><code>warningPresumido</code> só dispara para <code>real_com_credito</code>; correto é qualquer cliente</td>
+                    <td>Documentado</td>
+                    <td>Corrigir condição</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟠</span></td>
+                    <td><code>1048</code></td>
+                    <td>Simples Simplificado usa alíquotas plenas CBS/IBS; LC prevê alíquotas reduzidas</td>
+                    <td>Documentado</td>
+                    <td>Adicionar disclaimer</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟠</span></td>
+                    <td><code>1087</code></td>
+                    <td><code>simples_sim</code> fora de <code>regimesQueTomamCredito</code>; crédito presumido ignorado sem aviso</td>
+                    <td>Novo</td>
+                    <td>Disclaimer ou incluir</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟡</span></td>
+                    <td><code>791</code></td>
+                    <td>Label "com crédito" estático; exibido mesmo sem crédito ativo</td>
+                    <td>Novo</td>
+                    <td>Label dinâmico</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟡</span></td>
+                    <td><code>821</code></td>
+                    <td><code>id="rowRefImposto"</code> definido no HTML, nunca usado no JS</td>
+                    <td>Novo</td>
+                    <td>Remover ID ou usar</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">🟡</span></td>
+                    <td><code>1064, 1073</code></td>
+                    <td>Alíquotas soma &gt;100% gera receita negativa sem aviso; renda ≥100% fallback silencioso</td>
+                    <td>Novo</td>
+                    <td>Validar soma total</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">✅</span></td>
+                    <td><code>1064, 1077, 1083</code></td>
+                    <td>Invariante receita líquida preservada; IVA por fora correto em todos os regimes</td>
+                    <td>—</td>
+                    <td>Manter</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">✅</span></td>
+                    <td><code>1031</code></td>
+                    <td>Crédito PIS/COFINS hoje: somente Lucro Real locadora + Lucro Real cliente</td>
+                    <td>—</td>
+                    <td>Manter</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">✅</span></td>
+                    <td><code>1087</code></td>
+                    <td>Crédito IVA futuro: <code>real_sem_credito</code> e <code>presumido</code> incluídos corretamente</td>
+                    <td>—</td>
+                    <td>Manter</td>
+                </tr>
+                <tr>
+                    <td><span class="sev-icon">✅</span></td>
+                    <td><code>1068–1077</code></td>
+                    <td>Separação renda/consumo Simples: fórmula <code>baseSemIVA = receitaLiquida / (1 − aliqRendaFrac)</code> correta</td>
+                    <td>—</td>
+                    <td>Manter</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SEÇÃO 7 — PRIORIZAÇÃO -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-title">🗓️ Priorização de Correções</div>
+
+        <div class="info-box">
+            <h4>Sprint 1 — Obrigatório (antes da próxima versão)</h4>
+            <ul>
+                <li><strong>#1 Alíquota efetiva Simples:</strong> erro matemático direto que afeta o cálculo exibido ao usuário. Alta visibilidade comercial.</li>
+                <li><strong>#3 warningPresumido:</strong> correção simples de uma linha; elimina comunicação errada sobre crédito.</li>
+                <li><strong>#8 Validação de inputs extremos:</strong> previne exibição de valores negativos sem contexto.</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h4>Sprint 2 — Alta prioridade (impacto comercial)</h4>
+            <ul>
+                <li><strong>#2 Cronograma de transição:</strong> maior impacto sobre a utilidade da ferramenta para negociações 2027. Requer decisão de UX (seletor de ano vs. disclaimer).</li>
+                <li><strong>#5 Crédito presumido simples_sim:</strong> adicionar disclaimer mínimo é rápido e resolve o problema de comunicação.</li>
+                <li><strong>#4 Disclaimer Simples Simplificado:</strong> aguardar regulamentação do Comitê Gestor; adicionar nota de incerteza agora.</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h4>Sprint 3 — Refinamento</h4>
+            <ul>
+                <li><strong>#6 Label dinâmico "com crédito":</strong> melhoria de comunicação; não afeta os cálculos.</li>
+                <li><strong>#7 ID morto rowRefImposto:</strong> limpeza de manutenção.</li>
+                <li><strong>Ponto 3 do consultor:</strong> adicionar contextualização textual no boxAnalysis sobre impacto diferencial por regime.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="report-footer">
+        <p>Diagnóstico gerado em 27 de maio de 2026 · Simulador_V3_4.html · Sisloc Software</p>
+        <p style="margin-top:4px;">Análise realizada pelo agente <strong>revisor-fiscal</strong> com base na LC 214/2025, LC 123/2006 e feedback de consultor fiscal externo</p>
+    </div>
+
+</div>
+</body>
+</html>
