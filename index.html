@@ -3,570 +3,1141 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#002855">
     <title>Simulador Sisloc • Reforma Tributária</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
+            /* Sisloc brand */
             --primary: #004085;
             --primary-dark: #002855;
+            --primary-soft: #e6eef7;
             --accent: #f64f00;
             --accent-light: #ff8901;
-            --bg: #f4f6f9;
+            --accent-soft: #fff1e8;
+
+            /* Surfaces */
+            --bg: #f3f5f8;
             --surface: #ffffff;
-            --surface-alt: #f8f9fa;
-            --border: #e1e4e8;
+            --surface-alt: #f7f8fb;
+            --surface-mute: #eef1f5;
+            --border: #e4e7ec;
             --border-soft: #eef0f3;
-            --text: #1f2937;
-            --text-muted: #6b7280;
-            --text-soft: #9ca3af;
-            --success: #16a34a;
-            --success-bg: #dcfce7;
-            --warning: #d97706;
-            --warning-bg: #fef3c7;
-            --danger: #dc2626;
-            --danger-bg: #fee2e2;
+
+            /* Text */
+            --text: #0f172a;
+            --text-2: #475569;
+            --text-muted: #64748b;
+            --text-soft: #94a3b8;
+
+            /* Semantic */
+            --success: #15803d;
+            --success-bg: #ecfdf5;
+            --success-border: #bbf7d0;
+            --warning: #b45309;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --danger: #b91c1c;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
             --info: #0369a1;
-            --info-bg: #e0f2fe;
-            --radius: 12px;
-            --radius-sm: 8px;
-            --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
-            --shadow-lg: 0 6px 20px rgba(0,0,0,.08);
+            --info-bg: #eff6ff;
+            --info-border: #bfdbfe;
+
+            --radius: 14px;
+            --radius-sm: 10px;
+            --radius-xs: 8px;
+            --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 1px 3px rgba(15,23,42,.05);
+            --shadow: 0 1px 3px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+            --shadow-lg: 0 4px 12px rgba(15,23,42,.08), 0 24px 48px rgba(15,23,42,.08);
+
+            --input-h: 52px;
+            --focus-ring: 0 0 0 3px rgba(0,64,133,.18);
         }
 
         * { box-sizing: border-box; }
-
+        html { -webkit-text-size-adjust: 100%; }
         body {
-            background-image: url('https://sislocacademy.com.br/calculadora/fundo.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
-            background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,64,133,.07), transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(246,79,0,.05), transparent 60%);
+            background-attachment: fixed;
             color: var(--text);
+            font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-size: 16px;
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
         }
 
-        .container-head {
-            max-width: 1100px;
+        button { font-family: inherit; }
+
+        /* ============= SHELL ============= */
+        .shell {
+            max-width: 1120px;
             margin: 0 auto;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
-            padding: 36px 0 0 0;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background-color: var(--surface);
-            padding: 36px 40px 60px 40px;
-            border-bottom-left-radius: var(--radius);
-            border-bottom-right-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
+        /* ============= HEADER ============= */
+        .brand-header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, #1856a8 100%);
+            color: #fff;
+            border-radius: var(--radius);
+            padding: 22px 22px 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
-
-        header { text-align: center; margin-bottom: 20px; padding-bottom: 10px; }
-        header h1 { margin: 0; color: #fff; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; }
-        header p.subtitle { color: rgba(255,255,255,.92); margin-top: 6px; font-size: .95em; }
-        .logo { max-width: 140px; margin-bottom: 4px; }
-
-        /* --- STEP INDICATOR --- */
-        .step-block { margin-bottom: 28px; }
-        .step-header {
+        .brand-header::after {
+            content: '';
+            position: absolute;
+            right: -40px; top: -40px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(246,79,0,.35), transparent 70%);
+            pointer-events: none;
+        }
+        .brand-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 14px;
+            position: relative;
         }
-        .step-number {
+        .brand-logo {
+            height: 32px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+        .brand-tag {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-weight: 700;
+            color: rgba(255,255,255,.7);
+            border-left: 1px solid rgba(255,255,255,.25);
+            padding-left: 14px;
+            margin-left: 4px;
+        }
+        .brand-title {
+            margin: 14px 0 4px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            position: relative;
+        }
+        .brand-sub {
+            margin: 0;
+            color: rgba(255,255,255,.78);
+            font-size: .92rem;
+            position: relative;
+            max-width: 56ch;
+        }
+
+        /* ============= STEPS ============= */
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+        .step-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px 18px 6px;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            color: #fff;
-            font-weight: 700;
-            font-size: .95em;
-            flex-shrink: 0;
-            box-shadow: 0 2px 6px rgba(246,79,0,.25);
-        }
-        .step-title {
-            font-size: 1.05em;
-            font-weight: 700;
+            background: var(--primary-soft);
             color: var(--primary);
+            font-weight: 800;
+            font-size: .95rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .step-head-text { flex: 1; min-width: 0; }
+        .step-title {
             margin: 0;
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
         }
         .step-hint {
-            font-size: .82em;
+            margin: 2px 0 0;
+            font-size: .82rem;
             color: var(--text-muted);
-            margin-left: auto;
-            font-weight: 500;
+        }
+        .step-body {
+            padding: 14px 18px 20px;
         }
 
-        /* --- GRID & INPUTS --- */
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-        .input-group { display: flex; flex-direction: column; }
-        .input-group.full { grid-column: 1 / -1; }
+        /* ============= FORM GRID ============= */
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .field-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .field { display: flex; flex-direction: column; min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
 
-        label {
+        .field-label {
             font-weight: 600;
+            font-size: .85rem;
+            color: var(--text-2);
             margin-bottom: 6px;
-            font-size: .85em;
-            color: var(--text);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
+            line-height: 1.3;
+        }
+        .field-help {
+            margin-top: 6px;
+            font-size: .78rem;
+            color: var(--text-muted);
+            line-height: 1.45;
         }
 
+        input, select, textarea {
+            width: 100%;
+            height: var(--input-h);
+            padding: 0 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: border-color .15s, box-shadow .15s, background .15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="number"] { font-variant-numeric: tabular-nums; }
+        input:hover, select:hover { border-color: #c7cdd6; }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--focus-ring);
+        }
+        input:disabled, input[disabled] {
+            background: var(--surface-mute);
+            color: var(--text-2);
+            font-weight: 700;
+            cursor: not-allowed;
+            text-align: right;
+        }
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+
+        .percent-wrapper { position: relative; }
+        .percent-wrapper input {
+            padding-right: 36px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+        .percent-symbol {
+            position: absolute;
+            right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: .92rem;
+            pointer-events: none;
+        }
+
+        /* Money input emphasis */
+        .money-input {
+            font-size: 1.15rem !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.01em;
+            font-variant-numeric: tabular-nums;
+            height: 60px !important;
+        }
+
+        /* ============= TOOLTIP / POPOVER ============= */
         .info-tip {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: var(--border-soft);
+            background: var(--surface-mute);
             color: var(--text-muted);
-            font-size: .7em;
-            cursor: help;
+            font-size: .7rem;
+            font-weight: 700;
+            cursor: pointer;
             position: relative;
-            font-weight: 400;
-            transition: background .15s;
+            border: none;
+            font-family: inherit;
+            transition: background .15s, color .15s;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        .info-tip:hover { background: var(--primary); color: #fff; }
+        .info-tip:hover, .info-tip:focus-visible, .info-tip.is-open {
+            background: var(--primary);
+            color: #fff;
+            outline: none;
+        }
         .info-tip::after {
             content: attr(data-tip);
             position: absolute;
-            bottom: calc(100% + 8px);
+            bottom: calc(100% + 10px);
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(calc(-50% + var(--tip-shift, 0px)));
+            width: var(--tip-width, min(280px, calc(100vw - 40px)));
             background: var(--primary-dark);
             color: #fff;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: .92em;
-            font-weight: 400;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: .82rem;
+            font-weight: 500;
             line-height: 1.45;
-            width: 280px;
             text-align: left;
             opacity: 0;
             visibility: hidden;
-            transition: opacity .2s;
+            transition: opacity .18s, visibility .18s;
             pointer-events: none;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,.2);
+            z-index: 50;
+            box-shadow: 0 8px 28px rgba(0,0,0,.25);
+            white-space: normal;
         }
-        /* Variante: tooltip ancorado à direita (para ícones próximos da borda direita) */
-        .info-tip--right::after {
-            left: auto;
-            right: 0;
-            transform: none;
+        .info-tip::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--primary-dark);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .18s, visibility .18s;
+            z-index: 51;
         }
-        .info-tip:hover::after { opacity: 1; visibility: visible; }
+        .info-tip:hover::after, .info-tip:focus-visible::after, .info-tip.is-open::after,
+        .info-tip:hover::before, .info-tip:focus-visible::before, .info-tip.is-open::before {
+            opacity: 1;
+            visibility: visible;
+        }
+        .info-tip--right::after,
+        .info-tip--right::before { /* legacy variant — now handled dynamically via JS */ }
 
-        input, select {
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: .95em;
-            background-color: #fff;
-            width: 100%;
-            height: 42px;
-            font-family: inherit;
-            color: var(--text);
-            transition: border-color .15s, box-shadow .15s;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0,64,133,.08);
-        }
-        select { cursor: pointer; }
-
-        .percent-wrapper { position: relative; display: flex; align-items: center; }
-        .percent-wrapper input { padding-right: 32px; text-align: right; }
-        .percent-symbol { position: absolute; right: 12px; color: var(--text-muted); font-weight: 600; pointer-events: none; font-size: .9em; }
-
-        .help-text {
-            font-size: .75em;
-            color: var(--text-muted);
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
-        /* --- TAX GROUPS (collapsible) --- */
+        /* ============= ACCORDION (carga tributária) ============= */
         .tax-group {
-            background-color: var(--surface-alt);
-            border-radius: var(--radius-sm);
+            background: var(--surface-alt);
             border: 1px solid var(--border);
-            grid-column: 1 / -1;
+            border-radius: var(--radius-sm);
         }
         .accordion-header {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
+            gap: 12px;
+            padding: 14px 16px;
             background: transparent;
             border: none;
-            border-bottom: 1px solid transparent;
             border-radius: var(--radius-sm) var(--radius-sm) 0 0;
             cursor: pointer;
-            font-size: .78em;
+            text-align: left;
+            color: var(--text-2);
+            font-size: .78rem;
             font-weight: 700;
-            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: .4px;
-            outline: none;
-            transition: background-color .15s;
-            font-family: inherit;
+            letter-spacing: .08em;
+            transition: background .15s;
         }
-        .accordion-header:hover { background-color: #eef0f3; }
+        .accordion-header > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .accordion-header i.bi-receipt, .accordion-header i.bi-calculator {
+            color: var(--primary);
+            font-size: 1.1em;
+        }
+        .accordion-header:hover { background: var(--surface-mute); }
         .accordion-header.active { border-bottom: 1px solid var(--border); }
         .accordion-content {
             display: none;
             padding: 16px;
-            background-color: var(--surface-alt);
+            background: var(--surface-alt);
             border-radius: 0 0 var(--radius-sm) var(--radius-sm);
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
-        .accordion-content.active { display: grid; animation: fadeIn .25s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        .accordion-content.active {
+            display: grid;
+            animation: fadeIn .22s ease-out;
+        }
+        .accordion-content .field.full { grid-column: 1 / -1; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ============= REF BUTTON (Anexo III) ============= */
         .ref-button {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
+            gap: 8px;
+            padding: 10px 14px;
             background: #fff;
-            border: 1px solid var(--primary);
+            border: 1.5px solid var(--primary);
             color: var(--primary);
-            border-radius: 6px;
-            font-size: .75em;
+            border-radius: var(--radius-sm);
+            font-size: .85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all .15s;
             font-family: inherit;
+            min-height: 44px;
         }
         .ref-button:hover { background: var(--primary); color: #fff; }
+        .ref-button i { font-size: 1.05em; }
 
-        /* --- STRATEGY BOX --- */
+        /* ============= STRATEGY BOX ============= */
         .strategy-box {
-            background: linear-gradient(135deg, #fff9e9 0%, #fff4d1 100%);
+            background: linear-gradient(135deg, var(--accent-soft) 0%, #fff7ee 100%);
             padding: 14px 16px;
             border-radius: var(--radius-sm);
+            border: 1px solid #fcdcc4;
             border-left: 3px solid var(--accent);
             display: none;
-            grid-column: 1 / -1;
         }
         .strategy-box.active { display: block; }
-        .strategy-box label { color: var(--accent); margin-bottom: 8px; font-size: .85em; }
+        .strategy-box .field-label {
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .strategy-box .field-label i { color: var(--accent); }
 
-        /* --- WARNING INLINE --- */
+        /* ============= INLINE WARNING ============= */
         .inline-warning {
             background: var(--warning-bg);
-            color: var(--warning);
-            padding: 10px 14px;
+            color: #78350f;
+            padding: 12px 14px;
             border-radius: var(--radius-sm);
+            border: 1px solid var(--warning-border);
             border-left: 3px solid var(--warning);
-            font-size: .82em;
-            grid-column: 1 / -1;
+            font-size: .85rem;
             display: none;
             align-items: flex-start;
             gap: 10px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
         .inline-warning.active { display: flex; }
-        .inline-warning i { font-size: 1.1em; margin-top: 1px; }
+        .inline-warning i { font-size: 1.1em; margin-top: 1px; color: var(--warning); flex-shrink: 0; }
+        .inline-warning strong { color: #78350f; }
 
-        /* --- RESULTS --- */
-        .results-divider {
-            margin: 32px 0 24px 0;
-            text-align: center;
-            position: relative;
+        /* ============= YEAR PICKER ============= */
+        .year-picker {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
         }
-        .results-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--border);
-        }
-        .results-divider span {
-            background: #fff;
-            padding: 0 16px;
-            position: relative;
-            color: var(--text-muted);
-            font-size: .78em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
+        .year-picker .field-label { color: var(--primary); }
+        .year-picker .field-label i { color: var(--primary); }
+        .year-picker .field-help {
+            color: var(--primary);
+            font-style: italic;
+            font-weight: 500;
         }
 
-        .results-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            opacity: .45;
+        /* ============= RESULTS ============= */
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: opacity .25s;
+        }
+        .results-wrapper { /* keep id "resultados" — JS toggles .active here */
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            opacity: .55;
             transition: opacity .3s;
-            align-items: stretch;
         }
         .results-wrapper.active { opacity: 1; }
 
-        .card-result {
-            background: #fff;
+        .results-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            padding: 8px 4px 0;
+        }
+        .results-divider::before, .results-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .results-divider span { white-space: nowrap; }
+
+        /* ===== HERO IMPACT CARD (negotiation box) ===== */
+        .impact-hero {
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 22px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
-        .card-result.card-current { border-top: 3px solid var(--text-soft); }
-        .card-result.card-future { border-top: 3px solid var(--primary); }
-
-        .card-body-grow { flex-grow: 1; display: flex; flex-direction: column; }
-
-        .card-header {
+        .impact-hero.empty {
+            background: var(--surface-alt);
+            border-style: dashed;
+        }
+        .impact-hero.tone-up {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffe9d6 100%);
+            border-color: #fdba74;
+        }
+        .impact-hero.tone-up::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--accent);
+        }
+        .impact-hero.tone-down {
+            background: linear-gradient(135deg, var(--success-bg) 0%, #d1fae5 100%);
+            border-color: var(--success-border);
+        }
+        .impact-hero.tone-down::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--success);
+        }
+        .impact-hero.tone-neutral {
+            background: linear-gradient(135deg, var(--info-bg) 0%, #dbeafe 100%);
+            border-color: var(--info-border);
+        }
+        .impact-hero.tone-neutral::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--info);
+        }
+        .impact-hero.tone-error {
+            background: var(--danger-bg);
+            border-color: var(--danger-border);
+        }
+        .impact-hero .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 16px 8px;
             gap: 8px;
-            margin-bottom: 16px;
+        }
+        .impact-hero .empty-state i {
+            font-size: 2rem;
+            color: var(--text-soft);
+        }
+        .impact-hero .empty-state .empty-title {
+            font-weight: 700;
+            color: var(--text-2);
+            font-size: 1rem;
+        }
+        .impact-hero .empty-state .empty-sub {
+            font-size: .88rem;
+        }
+
+        .impact-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+        .tone-up .impact-eyebrow { color: var(--accent); }
+        .tone-down .impact-eyebrow { color: var(--success); }
+        .tone-neutral .impact-eyebrow { color: var(--info); }
+        .impact-headline {
+            font-size: .98rem;
+            color: var(--text-2);
+            margin-bottom: 4px;
+        }
+        .tone-up .impact-headline { color: #7c2d12; }
+        .tone-down .impact-headline { color: #14532d; }
+        .tone-neutral .impact-headline { color: #1e3a8a; }
+        .impact-number {
+            font-size: clamp(2rem, 7vw, 2.75rem);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.025em;
+            line-height: 1.05;
+            margin: 6px 0 4px;
+        }
+        .tone-up .impact-number { color: var(--accent); }
+        .tone-down .impact-number { color: var(--success); }
+        .tone-neutral .impact-number { color: var(--primary); }
+        .impact-foot {
+            font-size: .85rem;
+            color: var(--text-2);
+            font-weight: 500;
+        }
+        .tone-up .impact-foot { color: #7c2d12; }
+        .tone-down .impact-foot { color: #14532d; }
+
+        /* demonstrativo (table inside impact hero) */
+        .demonstrativo {
+            margin-top: 14px;
+            background: rgba(255,255,255,.65);
+            border: 1px solid rgba(255,255,255,.9);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: .92rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .impact-hero.empty .demonstrativo { display: none; }
+        .demonstrativo-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            color: var(--text-2);
+        }
+        .demonstrativo-row.total {
+            font-weight: 800;
+            color: var(--text);
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(15,23,42,.08);
+            font-size: 1rem;
+        }
+
+        /* avisos especiais dentro do hero */
+        .hero-notice {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: .82rem;
+            line-height: 1.5;
+            border: 1px solid;
+        }
+        .hero-notice.notice-warn {
+            background: var(--warning-bg);
+            border-color: var(--warning-border);
+            color: #78350f;
+        }
+        .hero-notice.notice-info {
+            background: var(--info-bg);
+            border-color: var(--info-border);
+            color: var(--primary);
+        }
+
+        /* legacy class names referenced by old JS rendering — alias to new styles */
+        .negotiation-title { /* not used in new render but kept defined */ }
+        .negotiation-value {
+            font-size: clamp(2rem, 7vw, 2.75rem);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.05;
+        }
+
+        /* ===== COMPARISON CARDS (HOJE vs PÓS-REFORMA) ===== */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .scenario {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .scenario-head {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
             padding-bottom: 14px;
+            margin-bottom: 12px;
             border-bottom: 1px solid var(--border-soft);
         }
-        .card-title {
-            font-weight: 800;
-            font-size: 1em;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            margin: 0;
+        .scenario-title-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
-        .card-current .card-title { color: var(--text-muted); }
-        .card-future .card-title { color: var(--primary); }
+        .scenario-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .scenario-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--text-soft);
+            flex-shrink: 0;
+        }
+        .scenario-now .scenario-dot { background: var(--text-soft); }
+        .scenario-future .scenario-dot { background: var(--primary); }
+        .scenario-title {
+            margin: 0;
+            font-size: .85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-2);
+            white-space: nowrap;
+        }
+        .scenario-now .scenario-title { color: var(--text-muted); }
+        .scenario-future .scenario-title { color: var(--primary); }
 
         .impact-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            font-size: .72em;
+            gap: 5px;
+            padding: 4px 10px;
+            font-size: .68rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .5px;
+            letter-spacing: .06em;
             border-radius: 999px;
-            background: var(--border-soft);
+            background: var(--surface-mute);
             color: var(--text-muted);
+            white-space: nowrap;
         }
-        .impact-badge.impact-low { background: var(--success-bg); color: var(--success); }
-        .impact-badge.impact-mid { background: var(--warning-bg); color: var(--warning); }
-        .impact-badge.impact-high { background: var(--danger-bg); color: var(--danger); }
-        .impact-badge.impact-positive { background: var(--info-bg); color: var(--info); }
+        .impact-badge.impact-low { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+        .impact-badge.impact-mid { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
+        .impact-badge.impact-high { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+        .impact-badge.impact-positive { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+        .impact-badge i { font-size: .9em; }
 
+        /* waterfall steps */
         .waterfall-step {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 11px 14px;
-            margin-bottom: 8px;
-            border-radius: var(--radius-sm);
-            font-size: .9em;
+            gap: 10px;
+            padding: 11px 12px;
+            margin-bottom: 6px;
+            border-radius: var(--radius-xs);
+            font-size: .92rem;
+            border: 1px solid transparent;
         }
-        .step-neutral { background-color: #f1f3f5; color: #495057; border-left: 3px solid #6c757d; font-weight: 600; }
-        .step-green { background-color: #e8f5e9; color: #2e7d32; border-left: 3px solid #2e7d32; }
-        .step-red { background-color: #ffebee; color: #c62828; border-left: 3px solid #c62828; }
-        .step-final { background-color: #e3f2fd; color: #0d47a1; border-left: 3px solid #0d47a1; font-weight: 700; font-size: 1em; margin-top: 10px; }
-        .step-label { display: flex; align-items: center; gap: 8px; }
-        .step-value { font-weight: 700; font-variant-numeric: tabular-nums; }
-        .icon-lock { color: #2e7d32; font-size: .9em; }
+        .step-neutral { background: var(--surface-mute); color: var(--text-2); border-color: var(--border); font-weight: 600; }
+        .step-green {
+            background: var(--success-bg);
+            color: #14532d;
+            border-left: 3px solid var(--success);
+            font-weight: 600;
+        }
+        .step-red {
+            background: var(--danger-bg);
+            color: #7f1d1d;
+            border-left: 3px solid var(--danger);
+            font-weight: 500;
+        }
+        .step-final {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            border-left: 3px solid var(--primary);
+            font-weight: 700;
+            margin-top: 8px;
+            padding: 13px 12px;
+        }
+        .step-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }
+        .step-label i { font-size: 1em; flex-shrink: 0; }
+        .step-value {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        .step-final .step-value { font-size: 1.08em; }
+        .step-green .step-value { color: var(--success); }
+        .step-red .step-value { color: var(--danger); }
+        .icon-lock { color: var(--success); }
 
-        .disclaimer-inline {
-            font-size: .72em;
-            color: var(--text-muted);
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            margin: 8px 0 4px 0;
-            line-height: 1.4;
-            display: flex;
-            gap: 6px;
-            align-items: flex-start;
-        }
-        .disclaimer-inline i { color: var(--info); margin-top: 1px; }
-
-        /* --- FOOTER BOXES --- */
-        .cost-footer, .negotiation-box {
-            margin-top: 16px;
-            padding: 16px;
+        .scenario-foot {
+            margin-top: 14px;
+            padding: 14px 16px;
             border-radius: var(--radius-sm);
-            text-align: center;
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: var(--surface-mute);
+            border: 1px solid var(--border);
         }
-        .cost-footer {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        .scenario-now .scenario-foot {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border-color: var(--primary-dark);
             color: #fff;
-            box-shadow: 0 3px 8px rgba(0,64,133,.2);
         }
-        .cost-footer-label { display: block; font-size: .72em; text-transform: uppercase; letter-spacing: 1px; opacity: .85; margin-bottom: 6px; }
-        .cost-footer-value { font-size: 1.35em; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .scenario-future .scenario-foot { display: none; } /* replaced by hero */
 
-        .negotiation-box { border: 2px solid var(--border); background: var(--surface-alt); }
-        .negotiation-title { font-weight: 700; margin-bottom: 5px; display: block; text-transform: uppercase; font-size: .8em; letter-spacing: .4px; }
-        .negotiation-value { font-size: 1.4em; font-weight: 900; margin: 6px 0; font-variant-numeric: tabular-nums; }
-
-        .demonstrativo {
-            font-size: .82em;
-            text-align: left;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: rgba(255,255,255,.5);
-            border-radius: 6px;
+        .foot-label {
+            display: block;
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            opacity: .85;
+            margin-bottom: 4px;
         }
-        .demonstrativo-row { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
-        .demonstrativo-row.total { font-weight: 700; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(0,0,0,.1); }
+        .foot-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
 
-        .empty-state {
-            text-align: center;
+        /* disclaimer (compact, inline) */
+        .disclaimer-inline {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: .78rem;
+            line-height: 1.45;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            background: var(--surface-alt);
             color: var(--text-muted);
-            font-size: .9em;
-            padding: 20px;
+            border: 1px solid var(--border-soft);
         }
-        .empty-state i { font-size: 2em; color: var(--text-soft); display: block; margin-bottom: 8px; }
+        .disclaimer-inline i { color: var(--info); margin-top: 2px; flex-shrink: 0; }
+        .disclaimer-inline strong { color: var(--text-2); }
 
-        /* --- MODAL --- */
+        /* ============= MODAL ============= */
         .modal-backdrop {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.5);
+            background: rgba(15,23,42,.55);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             z-index: 1000;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
-            padding: 20px;
+            padding: 0;
         }
         .modal-backdrop.active { display: flex; animation: fadeIn .2s; }
         .modal {
             background: #fff;
-            border-radius: var(--radius);
-            max-width: 680px;
+            border-radius: var(--radius) var(--radius) 0 0;
             width: 100%;
-            max-height: 90vh;
+            max-width: 720px;
+            max-height: 92vh;
             overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,.25);
+            box-shadow: 0 -12px 40px rgba(0,0,0,.25);
+            animation: slideUp .25s ease-out;
+            display: flex;
+            flex-direction: column;
         }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header {
-            padding: 18px 22px;
+            padding: 18px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
         }
-        .modal-title { margin: 0; color: var(--primary); font-size: 1.1em; font-weight: 700; }
+        .modal-title {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-title i { color: var(--primary); }
         .modal-close {
-            background: none;
+            background: var(--surface-mute);
             border: none;
             cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--text-2);
             font-size: 1.3em;
-            color: var(--text-muted);
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: background .15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s, color .15s;
+            flex-shrink: 0;
         }
-        .modal-close:hover { background: var(--surface-alt); color: var(--text); }
-        .modal-body { padding: 18px 22px; }
-        .modal-body p { font-size: .88em; color: var(--text-muted); margin: 0 0 14px 0; }
+        .modal-close:hover { background: var(--border); color: var(--text); }
+        .modal-body { padding: 18px 20px; }
+        .modal-body p {
+            font-size: .9rem;
+            color: var(--text-2);
+            margin: 0 0 14px;
+        }
 
-        .ref-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .85em;
+        .rbt12-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--primary-soft);
+            border: 1px solid #cfdcef;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 16px;
         }
-        .ref-table th {
-            background: var(--surface-alt);
-            padding: 10px 8px;
-            text-align: left;
-            font-weight: 700;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-            font-size: .82em;
+        .rbt12-row label {
+            font-weight: 600;
+            font-size: .85rem;
+            color: var(--primary);
         }
-        .ref-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border-soft);
-            font-variant-numeric: tabular-nums;
+        .rbt12-row .rbt12-controls {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
         }
-        .ref-table tr:hover td { background: var(--surface-alt); }
-        .ref-table .apply-btn {
-            padding: 4px 10px;
+        .rbt12-row input {
+            flex: 1;
+            height: 48px;
+            border-color: #cfdcef;
+        }
+        .rbt12-row button {
             background: var(--primary);
             color: #fff;
             border: none;
-            border-radius: 5px;
-            font-size: .78em;
+            border-radius: var(--radius-sm);
+            padding: 0 18px;
+            font-size: .9rem;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 600;
+            min-height: 48px;
+            white-space: nowrap;
+        }
+        .rbt12-row button:hover { background: var(--primary-dark); }
+
+        /* Table — desktop */
+        .ref-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+        .ref-table th {
+            background: var(--surface-alt);
+            padding: 11px 10px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-2);
+            border-bottom: 2px solid var(--border);
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .ref-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-soft);
+            font-variant-numeric: tabular-nums;
+            color: var(--text-2);
+        }
+        .ref-table tr:hover td { background: var(--surface-alt); }
+        .ref-table .apply-btn {
+            padding: 8px 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: .82rem;
+            cursor: pointer;
+            font-weight: 700;
             font-family: inherit;
             transition: background .15s;
+            min-height: 36px;
         }
         .ref-table .apply-btn:hover { background: var(--primary-dark); }
+        .ref-table .apply-btn:disabled { background: var(--surface-mute); color: var(--text-soft); cursor: not-allowed; }
+
+        /* Mobile cards (alt rendering — populated by same JS) */
+        .ref-cards { display: none; flex-direction: column; gap: 10px; }
+        .ref-card {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+        }
+        .ref-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .ref-card-faixa {
+            font-weight: 700;
+            font-size: .92rem;
+            color: var(--text);
+        }
+        .ref-card-das {
+            font-size: .75rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+        .ref-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .ref-card-cell {
+            background: #fff;
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+        .ref-card-cell-label {
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .ref-card-cell-value {
+            font-size: .95rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+        }
+        .ref-card-cell.highlight .ref-card-cell-value { color: var(--primary); }
+        .ref-card .apply-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: .9rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            min-height: 48px;
+        }
+        .ref-card .apply-btn:hover { background: var(--primary-dark); }
+        .ref-card .apply-btn:disabled { background: var(--surface-mute); color: var(--text-soft); cursor: not-allowed; }
 
         .modal-footer {
-            padding: 14px 22px;
+            padding: 14px 20px;
             border-top: 1px solid var(--border);
             background: var(--surface-alt);
-            font-size: .78em;
+            font-size: .78rem;
             color: var(--text-muted);
             line-height: 1.5;
+            border-radius: 0;
+        }
+        .modal-footer strong { color: var(--text-2); }
+        .modal-footer .modal-warn {
+            display: block;
+            margin-top: 6px;
+            color: var(--warning);
+            font-weight: 600;
         }
 
-        @media (max-width: 768px) {
-            body { padding: 12px; }
-            .container-head { padding-top: 28px; }
-            .container { padding: 24px 20px 40px 20px; }
-            .grid-inputs, .accordion-content, .results-wrapper { grid-template-columns: 1fr; gap: 14px; }
-            .step-hint { display: none; }
-            header h1 { font-size: 1.3rem; }
+        /* ============= DESKTOP ============= */
+        @media (min-width: 720px) {
+            body { padding: 24px 24px calc(24px + env(safe-area-inset-bottom)); }
+            .shell { gap: 20px; }
+            .brand-header { padding: 28px 32px 32px; }
+            .brand-title { font-size: 1.85rem; }
+            .step-head { padding: 22px 24px 8px; }
+            .step-body { padding: 16px 24px 24px; }
+            .field-grid.cols-2 { grid-template-columns: 1fr 1fr; gap: 18px; }
+            .comparison { grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+            .modal-backdrop { align-items: center; padding: 24px; }
+            .modal { border-radius: var(--radius); max-height: 88vh; }
+            .ref-table { display: table; }
+            .ref-cards { display: none; }
+            .rbt12-row { flex-direction: row; align-items: center; gap: 14px; }
+            .rbt12-row label { white-space: nowrap; }
+            .impact-number { font-size: 3rem; }
         }
+
+        @media (max-width: 719px) {
+            .ref-table { display: none; }
+            .ref-cards { display: flex; }
+            .accordion-content { grid-template-columns: 1fr; gap: 12px; }
+            .accordion-content.active { grid-template-columns: 1fr; }
+            .scenario-head { padding-bottom: 12px; margin-bottom: 10px; }
+            .field-grid.cols-2 { grid-template-columns: 1fr; }
+        }
+
+        /* a11y: prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        }
+
+        /* focus visible globally */
+        :focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+            border-radius: 6px;
+        }
+        button:focus-visible { box-shadow: var(--focus-ring); }
     </style>
 </head>
 
 <body>
-
-    <div class="container-head">
-        <header>
-            <img src="https://sislocacademy.com.br/calculadora/logosisloc.png" class="logo" alt="Sisloc">
-            <h1>Simulador • Reforma Tributária</h1>
-            <p class="subtitle">Proteja sua receita líquida e antecipe o impacto no cliente</p>
+    <div class="shell">
+        <!-- ============= HEADER ============= -->
+        <header class="brand-header">
+            <div class="brand-row">
+                <img src="https://sislocacademy.com.br/calculadora/logosisloc.png" class="brand-logo" alt="Sisloc">
+                <span class="brand-tag">Simulador Fiscal</span>
+            </div>
+            <h1 class="brand-title">Reforma Tributária para locadoras</h1>
+            <p class="brand-sub">Calcule o impacto da CBS e do IBS no preço e proteja sua receita líquida na negociação.</p>
         </header>
 
-        <div class="container">
-
-            <!-- ============= STEP 1: LOCADORA ============= -->
-            <div class="step-block">
-                <div class="step-header">
-                    <span class="step-number">1</span>
-                    <h2 class="step-title">Sua empresa (Locadora)</h2>
-                    <span class="step-hint">Regime atual e carga tributária</span>
+        <!-- ============= STEP 1: LOCADORA ============= -->
+        <section class="step">
+            <div class="step-head">
+                <span class="step-num">1</span>
+                <div class="step-head-text">
+                    <h2 class="step-title">Sua locadora</h2>
+                    <p class="step-hint">Regime tributário atual e carga incidente sobre a receita.</p>
                 </div>
-
-                <div class="grid-inputs">
-                    <div class="input-group">
-                        <label>
+            </div>
+            <div class="step-body">
+                <div class="field-grid">
+                    <div class="field">
+                        <label class="field-label" for="regimeAtualLocadora">
                             Regime tributário atual
-                            <span class="info-tip" data-tip="Define como sua empresa paga impostos hoje e, consequentemente, o que muda na reforma.">?</span>
+                            <button type="button" class="info-tip" data-tip="Define como sua empresa paga impostos hoje e, consequentemente, o que muda na reforma." aria-label="Ajuda">?</button>
                         </label>
                         <select id="regimeAtualLocadora" onchange="ajustarInterfaceRegime()">
                             <option value="presumido" selected>Lucro Presumido</option>
@@ -575,94 +1146,101 @@
                         </select>
                     </div>
 
-                    <div class="input-group">
-                        <!-- Espaço reservado para alinhamento -->
-                    </div>
-
                     <!-- Alíquotas detalhadas (Real / Presumido) -->
                     <div id="impostosDetalhados" class="tax-group">
-                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)">
+                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)" aria-expanded="true">
                             <span><i class="bi bi-receipt"></i> Carga atual (impostos por dentro)</span>
                             <i class="bi bi-chevron-up"></i>
                         </button>
                         <div class="accordion-content active">
-                            <div class="input-group">
-                                <label>
+                            <div class="field">
+                                <label class="field-label" for="aliqPisCofins">
                                     PIS/COFINS
-                                    <span class="info-tip" data-tip="Lucro Real: 9,25% não cumulativo (gera crédito). Lucro Presumido: 3,65% cumulativo (NÃO gera crédito).">?</span>
+                                    <button type="button" class="info-tip" data-tip="Lucro Real: 9,25% não cumulativo (gera crédito). Lucro Presumido: 3,65% cumulativo (NÃO gera crédito).">?</button>
                                 </label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqPisCofins" value="3.65" step="0.01" min="0" oninput="validarPositivo(this)">
+                                    <input type="number" id="aliqPisCofins" value="3.65" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this)">
                                     <span class="percent-symbol">%</span>
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <label>ICMS (Estadual)</label>
+                            <div class="field">
+                                <label class="field-label" for="aliqIcms">ICMS (Estadual)</label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqIcms" value="0.00" step="0.01" min="0" oninput="validarPositivo(this)">
+                                    <input type="number" id="aliqIcms" value="0.00" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this)">
                                     <span class="percent-symbol">%</span>
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <label>ISS (Municipal)</label>
+                            <div class="field">
+                                <label class="field-label" for="aliqIss">ISS (Municipal)</label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqIss" value="0.00" step="0.01" min="0" oninput="validarPositivo(this)">
+                                    <input type="number" id="aliqIss" value="0.00" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this)">
                                     <span class="percent-symbol">%</span>
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <label>Total atual</label>
-                                <input type="text" id="aliqTotalAtualDisplay" value="3.65%" disabled style="background-color: #e9ecef; font-weight:700; text-align:right;">
+                            <div class="field">
+                                <label class="field-label" for="aliqIrpjCsll">
+                                    IRPJ + CSLL
+                                    <button type="button" class="info-tip" data-tip="Alíquota efetiva sobre a receita bruta. Presumido (locação de bens móveis): 7,68% — presunção 32% × IRPJ 15% + presunção 32% × CSLL 9% (Lei 9.249/95 art. 15 §1º). Lucro Real: informe a alíquota efetiva sobre receita conforme sua margem.">?</button>
+                                </label>
+                                <div class="percent-wrapper">
+                                    <input type="number" id="aliqIrpjCsll" value="7.68" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this);">
+                                    <span class="percent-symbol">%</span>
+                                </div>
+                                <span class="field-help" id="helpIrpjCsll">Permanece após a reforma (não substituído pelo IVA)</span>
+                            </div>
+                            <div class="field full">
+                                <label class="field-label">Total atual</label>
+                                <input type="text" id="aliqTotalAtualDisplay" value="3.65%" disabled>
                             </div>
                         </div>
                     </div>
 
                     <!-- Simples Nacional: composição DAS -->
                     <div id="impostoSimplesUnico" class="tax-group" style="display:none;">
-                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)">
+                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)" aria-expanded="true">
                             <span><i class="bi bi-receipt"></i> Composição da alíquota DAS</span>
                             <i class="bi bi-chevron-up"></i>
                         </button>
                         <div class="accordion-content active">
-                            <div class="input-group full" style="margin-bottom: 4px;">
-                                <button type="button" class="ref-button" onclick="abrirModalReferencia();" style="align-self: flex-start;">
+                            <div class="field full">
+                                <button type="button" class="ref-button" onclick="abrirModalReferencia();">
                                     <i class="bi bi-table"></i> Não sei o split — usar tabela Anexo III
                                 </button>
                             </div>
-                            <div class="input-group">
-                                <label>
+                            <div class="field">
+                                <label class="field-label" for="aliqSimplesConsumo">
                                     Parcela CONSUMO
-                                    <span class="info-tip" data-tip="PIS + COFINS + ICMS + ISS dentro do DAS. Será substituída pelo IVA (CBS + IBS) na reforma.">?</span>
+                                    <button type="button" class="info-tip" data-tip="PIS + COFINS + ICMS + ISS dentro do DAS. Será substituída pelo IVA (CBS + IBS) na reforma.">?</button>
                                 </label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqSimplesConsumo" placeholder="Ex: 2.95" step="0.01" min="0" oninput="validarPositivo(this); atualizarTotalSimples();">
+                                    <input type="number" id="aliqSimplesConsumo" placeholder="Ex: 2.95" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this); atualizarTotalSimples();">
                                     <span class="percent-symbol">%</span>
                                 </div>
-                                <span class="help-text">Substituída pelo IVA na reforma</span>
+                                <span class="field-help">Substituída pelo IVA na reforma</span>
                             </div>
-                            <div class="input-group">
-                                <label>
+                            <div class="field">
+                                <label class="field-label" for="aliqSimplesRenda">
                                     Parcela RENDA
-                                    <span class="info-tip" data-tip="IRPJ + CSLL + CPP (INSS patronal). Permanece no DAS mesmo após a reforma.">?</span>
+                                    <button type="button" class="info-tip" data-tip="IRPJ + CSLL + CPP (INSS patronal). Permanece no DAS mesmo após a reforma.">?</button>
                                 </label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqSimplesRenda" placeholder="Ex: 3.05" step="0.01" min="0" oninput="validarPositivo(this); atualizarTotalSimples();">
+                                    <input type="number" id="aliqSimplesRenda" placeholder="Ex: 3.05" step="0.01" min="0" inputmode="decimal" oninput="validarPositivo(this); atualizarTotalSimples();">
                                     <span class="percent-symbol">%</span>
                                 </div>
-                                <span class="help-text">Permanece no DAS após a reforma</span>
+                                <span class="field-help">Permanece no DAS após a reforma</span>
                             </div>
-                            <div class="input-group full">
-                                <label>Total DAS (alíquota efetiva)</label>
-                                <input type="text" id="aliqSimplesTotalDisplay" disabled style="background-color: #e9ecef; font-weight:700; text-align:right;">
+                            <div class="field full">
+                                <label class="field-label">Total DAS (alíquota efetiva)</label>
+                                <input type="text" id="aliqSimplesTotalDisplay" disabled>
                             </div>
                         </div>
                     </div>
 
                     <!-- Estratégia Simples Pós-Reforma -->
                     <div class="strategy-box" id="boxSimplesFuturo">
-                        <label>
+                        <label class="field-label" for="regimeFuturoLocadoraSimples">
                             <i class="bi bi-lightbulb-fill"></i> Estratégia pós-reforma
-                            <span class="info-tip" data-tip="Simplificado: mantém o DAS cheio, mas NÃO transfere crédito ao cliente. Não Cumulativo: paga IVA (CBS+IBS) por fora e passa a transferir crédito.">?</span>
+                            <button type="button" class="info-tip" data-tip="Simplificado: mantém o DAS cheio, mas NÃO transfere crédito ao cliente. Não Cumulativo: paga IVA (CBS+IBS) por fora e passa a transferir crédito.">?</button>
                         </label>
                         <select id="regimeFuturoLocadoraSimples">
                             <option value="simplificado">Opção 1 — Simples Simplificado (não gera crédito)</option>
@@ -671,107 +1249,142 @@
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- ============= STEP 2: TRANSAÇÃO ============= -->
-            <div class="step-block">
-                <div class="step-header">
-                    <span class="step-number">2</span>
+        <!-- ============= STEP 2: TRANSAÇÃO ============= -->
+        <section class="step">
+            <div class="step-head">
+                <span class="step-num">2</span>
+                <div class="step-head-text">
                     <h2 class="step-title">A transação</h2>
-                    <span class="step-hint">Valor da fatura e perfil do cliente</span>
+                    <p class="step-hint">Valor da fatura atual e perfil tributário do cliente.</p>
                 </div>
-
-                <div class="grid-inputs">
-                    <div class="input-group">
-                        <label>
+            </div>
+            <div class="step-body">
+                <div class="field-grid cols-2">
+                    <div class="field">
+                        <label class="field-label" for="valorAtual">
                             Valor da fatura (hoje)
-                            <span class="info-tip" data-tip="Valor bruto da nota fiscal atual. A simulação calcula o novo valor necessário para manter sua receita líquida.">?</span>
+                            <button type="button" class="info-tip" data-tip="Valor bruto da nota fiscal atual. A simulação calcula o novo valor necessário para manter sua receita líquida.">?</button>
                         </label>
-                        <input type="text" id="valorAtual" placeholder="R$ 0,00" oninput="formatarMoedaInput(this)">
+                        <input type="text" id="valorAtual" class="money-input" placeholder="R$ 0,00" inputmode="numeric" autocomplete="off" oninput="formatarMoedaInput(this)">
                     </div>
-                    <div class="input-group">
-                        <label>
+                    <div class="field">
+                        <label class="field-label" for="regimeCliente">
                             Regime do cliente
-                            <span class="info-tip" data-tip="Define se o cliente toma crédito de PIS/COFINS hoje e se tomará crédito de IVA após a reforma.">?</span>
+                            <button type="button" class="info-tip info-tip--right" data-tip="Define se o cliente toma crédito de PIS/COFINS hoje e se tomará crédito de IVA após a reforma.">?</button>
                         </label>
                         <select id="regimeCliente">
                             <option value="real_com_credito">Lucro Real — com crédito PIS/COFINS</option>
                             <option value="real_sem_credito">Lucro Real — sem crédito (uso/consumo)</option>
                             <option value="presumido">Lucro Presumido — não toma crédito</option>
-                            <option value="simples_nc">Simples Nacional — Não Cumulativo (toma crédito)</option>
-                            <option value="simples_sim">Simples Nacional — Simplificado</option>
+                            <option value="simples_nc">Simples — Não Cumulativo (toma crédito)</option>
+                            <option value="simples_sim">Simples — Simplificado</option>
                             <option value="nao_contribuinte">Pessoa física / não contribuinte</option>
                         </select>
-                        <span class="help-text">O crédito atual depende se o bem é insumo produtivo ou uso/consumo</span>
+                        <span class="field-help">O crédito atual depende se o bem é insumo produtivo ou uso/consumo</span>
                     </div>
 
-                    <!-- Alerta contextual: Presumido não gera crédito -->
-                    <div class="inline-warning" id="warningPresumido">
+                    <div class="inline-warning full" id="warningPresumido">
                         <i class="bi bi-exclamation-triangle-fill"></i>
                         <span><strong>Atenção:</strong> no Lucro Presumido, o PIS/COFINS é cumulativo e <strong>não gera crédito</strong> para o cliente, independentemente do regime dele. O custo final do cliente será igual ao valor da fatura.</span>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- ============= STEP 3: REFORMA ============= -->
-            <div class="step-block">
-                <div class="step-header">
-                    <span class="step-number">3</span>
+        <!-- ============= STEP 3: REFORMA ============= -->
+        <section class="step">
+            <div class="step-head">
+                <span class="step-num">3</span>
+                <div class="step-head-text">
                     <h2 class="step-title">Parâmetros da reforma</h2>
-                    <span class="step-hint">
-                        IVA Dual — por fora
-                        <span class="info-tip info-tip--right" data-tip="CBS (federal) + IBS (estadual/municipal) substituem PIS/COFINS/ICMS/ISS na reforma. 'Por fora' significa que o imposto é somado ao preço e pago pelo cliente, em vez de embutido no valor da nota — como nos EUA com o sales tax.">?</span>
-                    </span>
+                    <p class="step-hint">IVA Dual (CBS + IBS) — cobrado <em>por fora</em>, somado ao preço como o sales tax norte-americano.</p>
                 </div>
+            </div>
+            <div class="step-body">
+                <div class="field-grid">
+                    <div class="year-picker">
+                        <label class="field-label" for="anoReferencia">
+                            <i class="bi bi-calendar-event"></i> Ano de referência
+                            <button type="button" class="info-tip" data-tip="CBS entra em 2027. IBS começa gradualmente em 2029 (1/5 do pleno) e chega ao máximo em 2033. Este simulador ajusta automaticamente o IBS conforme o ano selecionado.">?</button>
+                        </label>
+                        <select id="anoReferencia" onchange="aplicarEscalonamentoAno()">
+                            <option value="2027" selected>2027 — Apenas CBS (IBS ainda não vigente)</option>
+                            <option value="2029">2029 — CBS + IBS 1/5 do pleno</option>
+                            <option value="2030">2030 — CBS + IBS 2/5 do pleno</option>
+                            <option value="2031">2031 — CBS + IBS 3/5 do pleno</option>
+                            <option value="2032">2032 — CBS + IBS 4/5 do pleno</option>
+                            <option value="2033">2033 — Regime pleno (CBS + IBS integrais)</option>
+                        </select>
+                        <span class="field-help" id="anoReferenciaHint">CBS pleno (8,8%). IBS ainda não vigente — apenas CBS impacta.</span>
+                    </div>
 
-                <div class="grid-inputs">
                     <div class="tax-group">
-                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)">
+                        <button type="button" class="accordion-header active" onclick="toggleAccordion(this)" aria-expanded="true">
                             <span><i class="bi bi-calculator"></i> Estimativa IVA Dual (CBS + IBS)</span>
                             <i class="bi bi-chevron-up"></i>
                         </button>
                         <div class="accordion-content active">
-                            <div class="input-group">
-                                <label>
+                            <div class="field">
+                                <label class="field-label" for="aliqCbs">
                                     CBS (Federal)
-                                    <span class="info-tip" data-tip="Contribuição sobre Bens e Serviços. Substitui PIS/COFINS. Estimativa oficial: 8,8%.">?</span>
+                                    <button type="button" class="info-tip" data-tip="Contribuição sobre Bens e Serviços. Substitui PIS/COFINS. Estimativa oficial: 8,8%.">?</button>
                                 </label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqCbs" value="8.8" step="0.1" min="0" oninput="validarPositivo(this)">
+                                    <input type="number" id="aliqCbs" value="8.8" step="0.1" min="0" inputmode="decimal" oninput="validarPositivo(this)">
                                     <span class="percent-symbol">%</span>
                                 </div>
                             </div>
-                            <div class="input-group">
-                                <label>
+                            <div class="field">
+                                <label class="field-label" for="aliqIbs">
                                     IBS (Estadual + Municipal)
-                                    <span class="info-tip" data-tip="Imposto sobre Bens e Serviços. Substitui ICMS + ISS. Faixa estimada: 13% a 19% (padrão: 17,7%). Valor varia por município/estado na regulamentação.">?</span>
+                                    <button type="button" class="info-tip info-tip--right" data-tip="Imposto sobre Bens e Serviços. Substitui ICMS + ISS. Faixa estimada: 13% a 19% (padrão: 17,7%). Valor varia por município/estado na regulamentação.">?</button>
                                 </label>
                                 <div class="percent-wrapper">
-                                    <input type="number" id="aliqIbs" value="17.7" step="0.1" min="0" oninput="validarPositivo(this)">
+                                    <input type="number" id="aliqIbs" value="17.7" step="0.1" min="0" inputmode="decimal" oninput="validarPositivo(this)">
                                     <span class="percent-symbol">%</span>
                                 </div>
-                                <span class="help-text">Faixa estimada: 13% a 19%</span>
+                                <span class="field-help">Faixa estimada: 13% a 19%</span>
                             </div>
-                            <div class="input-group full">
-                                <label>Total estimado</label>
-                                <input type="text" id="aliqTotalFuturaDisplay" value="26.5%" disabled style="background-color: #e9ecef; font-weight:700; text-align:right;">
+                            <div class="field full">
+                                <label class="field-label">Total estimado</label>
+                                <input type="text" id="aliqTotalFuturaDisplay" value="26.5%" disabled>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- ============= RESULTADOS ============= -->
-            <div class="results-divider"><span>Comparativo</span></div>
+        <!-- ============= RESULTADOS ============= -->
+        <section class="results">
+            <div class="results-divider"><span>Resultado da simulação</span></div>
 
+            <!-- container with id="resultados" — JS toggles .active -->
             <div class="results-wrapper" id="resultados">
+                <!-- HERO: impact on customer cost (negotiation) -->
+                <div class="impact-hero empty" id="boxAnalysis">
+                    <div class="empty-state">
+                        <i class="bi bi-arrow-up-circle"></i>
+                        <div class="empty-title">Aguardando dados</div>
+                        <div class="empty-sub">Preencha o valor da fatura para ver o impacto no custo do cliente.</div>
+                    </div>
+                </div>
 
-                <!-- CENÁRIO HOJE -->
-                <div class="card-result card-current">
-                    <div class="card-body-grow">
-                        <div class="card-header">
-                            <h3 class="card-title">Cenário HOJE</h3>
-                            <span class="impact-badge" id="lblRegimeAtual">Regime atual</span>
-                        </div>
+                <!-- Side-by-side comparison -->
+                <div class="comparison">
+                    <!-- HOJE -->
+                    <article class="scenario scenario-now">
+                        <header class="scenario-head">
+                            <div class="scenario-title-row">
+                                <span class="scenario-dot"></span>
+                                <h3 class="scenario-title">Cenário hoje</h3>
+                            </div>
+                            <div class="scenario-meta">
+                                <span class="impact-badge" id="lblRegimeAtual">Regime atual</span>
+                            </div>
+                        </header>
 
                         <div class="waterfall-step step-neutral">
                             <div class="step-label">Valor da fatura</div>
@@ -785,106 +1398,113 @@
                             <div class="step-label"><i class="bi bi-lock-fill icon-lock"></i> Receita líquida</div>
                             <div class="step-value" id="resAtualLiquido">R$ 0,00</div>
                         </div>
-                    </div>
 
-                    <div class="cost-footer">
-                        <span class="cost-footer-label">Custo final do cliente (com crédito)</span>
-                        <div class="cost-footer-value" id="resCustoRealAtual">R$ 0,00</div>
-                    </div>
-                </div>
-
-                <!-- CENÁRIO FUTURO -->
-                <div class="card-result card-future">
-                    <div class="card-body-grow">
-                        <div class="card-header">
-                            <h3 class="card-title">Cenário PÓS-REFORMA</h3>
-                            <span class="impact-badge" id="lblRegimeFuturo" style="background: #e0f2fe; color: var(--primary);">Regime futuro</span>
-                            <span class="impact-badge" id="impactBadge" style="display:none;"></span>
+                        <div class="scenario-foot">
+                            <span class="foot-label" id="lblCustoRealAtual">Custo final do cliente</span>
+                            <div class="foot-value" id="resCustoRealAtual">R$ 0,00</div>
                         </div>
+                    </article>
 
-                        <!-- Linha 1: Valor sem IVA (só Simples) -->
+                    <!-- PÓS-REFORMA -->
+                    <article class="scenario scenario-future">
+                        <header class="scenario-head">
+                            <div class="scenario-title-row">
+                                <span class="scenario-dot"></span>
+                                <h3 class="scenario-title">Pós-reforma</h3>
+                            </div>
+                            <div class="scenario-meta">
+                                <span class="impact-badge" id="lblRegimeFuturo">Regime futuro</span>
+                                <span class="impact-badge" id="impactBadge" style="display:none;"></span>
+                            </div>
+                        </header>
+
                         <div class="waterfall-step step-neutral" id="rowBaseSemIVA" style="display:none;">
                             <div class="step-label">Valor da fatura sem IVA</div>
                             <div class="step-value" id="resBaseSemIVA">R$ 0,00</div>
                         </div>
-                        <!-- Linha 2: IRPJ/CSLL/CPP (só Simples) -->
                         <div class="waterfall-step step-red" id="rowIrpjCsll" style="display:none;">
                             <div class="step-label" id="lblIrpjCsll"><i class="bi bi-dash-circle"></i> IRPJ/CSLL/CPP</div>
                             <div class="step-value" id="resRefIrpjCsll">R$ 0,00</div>
                         </div>
-                        <!-- Linha 3: Receita líquida (sempre visível) -->
                         <div class="waterfall-step step-green">
                             <div class="step-label"><i class="bi bi-lock-fill icon-lock"></i> Receita líquida (protegida)</div>
                             <div class="step-value" id="resRefLiquido">R$ 0,00</div>
                         </div>
-                        <!-- Linha 4: Imposto consumo / reforma (sempre visível) -->
-                        <div class="waterfall-step step-red" id="rowRefImposto">
+                        <div class="waterfall-step step-red">
                             <div class="step-label" id="lblRefImposto"><i class="bi bi-plus-circle"></i> Impostos da reforma</div>
                             <div class="step-value" id="resRefImposto">R$ 0,00</div>
                         </div>
-                        <!-- Linha 5: Total -->
                         <div class="waterfall-step step-final">
                             <div class="step-label">Total da fatura</div>
-                            <div class="step-value" id="resRefTotal" style="font-size:1.15em;">R$ 0,00</div>
+                            <div class="step-value" id="resRefTotal">R$ 0,00</div>
                         </div>
 
                         <div class="disclaimer-inline" id="disclaimerIva">
                             <i class="bi bi-info-circle-fill"></i>
                             <span>Cálculo conservador — não considera créditos de entrada de IVA (insumos, energia, terceiros). O imposto real tende a ser menor.</span>
                         </div>
-                    </div>
-
-                    <div class="negotiation-box" id="boxAnalysis">
-                        <div class="empty-state">
-                            <i class="bi bi-arrow-up-circle"></i>
-                            Preencha o valor da fatura para ver a análise
+                        <div class="disclaimer-inline" id="disclaimerSimplesSimp" style="display:none;">
+                            <i class="bi bi-exclamation-triangle-fill" style="color:var(--warning);"></i>
+                            <span><strong>Simples Simplificado:</strong> a LC 214/2025 prevê alíquotas CBS+IBS reduzidas para este regime, mas o percentual exato aguarda regulamentação. O simulador usa as alíquotas plenas como referência conservadora — o impacto real tende a ser <strong>menor</strong>.</span>
                         </div>
-                    </div>
+                    </article>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 
     <!-- ============= MODAL: TABELA ANEXO III ============= -->
     <div class="modal-backdrop" id="modalReferencia" onclick="if(event.target===this) fecharModal()">
-        <div class="modal">
+        <div class="modal" role="dialog" aria-labelledby="modalReferenciaTitle">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="bi bi-table"></i> Tabela de referência — Anexo III (Simples Nacional)</h3>
-                <button class="modal-close" onclick="fecharModal()">&times;</button>
+                <h3 class="modal-title" id="modalReferenciaTitle"><i class="bi bi-table"></i> Tabela de referência — Anexo III</h3>
+                <button class="modal-close" onclick="fecharModal()" aria-label="Fechar">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Encontre a faixa de receita bruta dos últimos 12 meses da sua empresa e clique em <strong>Aplicar</strong> para preencher automaticamente os campos.</p>
+                <p>Informe a receita bruta acumulada dos últimos 12 meses (RBT12) para calcular a <strong>alíquota efetiva</strong> da sua faixa. Toque em <strong>Aplicar</strong> para preencher automaticamente.</p>
+                <div class="rbt12-row">
+                    <label for="rbt12Input">Receita bruta — últimos 12 meses (RBT12)</label>
+                    <div class="rbt12-controls">
+                        <input type="text" id="rbt12Input" placeholder="Ex: R$ 500.000,00" inputmode="numeric" autocomplete="off" oninput="formatarRbt12(this)">
+                        <button type="button" onclick="recalcularEfetivas()">Calcular</button>
+                    </div>
+                </div>
+                <!-- Desktop -->
                 <table class="ref-table">
                     <thead>
                         <tr>
                             <th>Receita bruta (12m)</th>
-                            <th>DAS total</th>
+                            <th>DAS nominal</th>
+                            <th>Alíq. efetiva</th>
                             <th>Consumo</th>
                             <th>Renda</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="refTableBody">
-                        <!-- Populado via JS -->
-                    </tbody>
+                    <tbody id="refTableBody"><!-- populated by JS --></tbody>
                 </table>
+                <!-- Mobile -->
+                <div class="ref-cards" id="refCardsBody"><!-- populated by JS --></div>
             </div>
             <div class="modal-footer">
-                <strong>Consumo</strong> = PIS + COFINS + ISS (substituído pelo IVA na reforma). <strong>Renda</strong> = IRPJ + CSLL + CPP (permanece no DAS).<br>
-                Valores aproximados para o Anexo III — locação de bens móveis e serviços equiparados. Consulte seu contador para valores exatos da sua faixa.
+                <strong>Alíquota efetiva</strong> = (RBT12 × alíq. nominal − PD) ÷ RBT12 (LC 123/2006, Anexo III).
+                <strong>Consumo</strong> = PIS + COFINS + ISS (substituído pelo IVA).
+                <strong>Renda</strong> = IRPJ + CSLL + CPP (permanece no DAS).
+                <span class="modal-warn">⚠ Confirme os valores com seu contador via PGDAS-D — esta tabela é estimativa para o Anexo III, locação de bens móveis.</span>
             </div>
         </div>
     </div>
 
     <script>
         // ============= CONSTANTES =============
+        // LC 123/2006, Anexo III — locação de bens móveis e serviços equiparados
         const ANEXO_III = [
-            { faixa: 'Até R$ 180.000', das: 6.00,  consumo: 2.95, renda: 3.05 },
-            { faixa: 'R$ 180k a 360k', das: 11.20, consumo: 5.53, renda: 5.67 },
-            { faixa: 'R$ 360k a 720k', das: 13.50, consumo: 6.66, renda: 6.84 },
-            { faixa: 'R$ 720k a 1,8M', das: 16.00, consumo: 7.89, renda: 8.11 },
-            { faixa: 'R$ 1,8M a 3,6M', das: 21.00, consumo: 10.35, renda: 10.65 },
-            { faixa: 'R$ 3,6M a 4,8M', das: 33.00, consumo: 16.27, renda: 16.73 }
+            { faixa: 'Até R$ 180.000',  das: 6.00,  pd: 0,       propConsumo: 2.95/6.00,  propRenda: 3.05/6.00  },
+            { faixa: 'R$ 180k a 360k',  das: 11.20, pd: 9360,    propConsumo: 5.53/11.20, propRenda: 5.67/11.20 },
+            { faixa: 'R$ 360k a 720k',  das: 13.50, pd: 17640,   propConsumo: 6.66/13.50, propRenda: 6.84/13.50 },
+            { faixa: 'R$ 720k a 1,8M',  das: 16.00, pd: 35640,   propConsumo: 7.89/16.00, propRenda: 8.11/16.00 },
+            { faixa: 'R$ 1,8M a 3,6M',  das: 21.00, pd: 125640,  propConsumo: 10.35/21.00,propRenda: 10.65/21.00},
+            { faixa: 'R$ 3,6M a 4,8M',  das: 33.00, pd: 648000,  propConsumo: 16.27/33.00,propRenda: 16.73/33.00}
         ];
 
         // ============= UTILS =============
@@ -903,9 +1523,11 @@
             btn.classList.toggle('active');
             const content = btn.nextElementSibling;
             content.classList.toggle('active');
+            const open = content.classList.contains('active');
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
             const icon = btn.querySelector('i.bi-chevron-up, i.bi-chevron-down');
             if (icon) {
-                if (content.classList.contains('active')) {
+                if (open) {
                     icon.classList.remove('bi-chevron-down'); icon.classList.add('bi-chevron-up');
                 } else {
                     icon.classList.remove('bi-chevron-up'); icon.classList.add('bi-chevron-down');
@@ -913,19 +1535,138 @@
             }
         }
 
+        // ============= TOOLTIP TAP TOGGLE (mobile) =============
+        // Toggle tooltips on tap; close on outside tap. Hover still works on desktop via CSS.
+        function posicionarTip(tip) {
+            const r = tip.getBoundingClientRect();
+            const tipCenter = r.left + r.width / 2;
+            const vw = window.innerWidth;
+            const margin = 12;
+            const bubbleW = Math.min(280, vw - 2 * margin);
+            const halfBubble = bubbleW / 2;
+            let shift = 0;
+            if (tipCenter - halfBubble < margin) {
+                shift = margin - (tipCenter - halfBubble);
+            } else if (tipCenter + halfBubble > vw - margin) {
+                shift = (vw - margin) - (tipCenter + halfBubble);
+            }
+            tip.style.setProperty('--tip-shift', shift + 'px');
+            tip.style.setProperty('--tip-width', bubbleW + 'px');
+        }
+
+        // Pre-position on hover/focus so the very first frame is correct.
+        document.addEventListener('pointerenter', (e) => {
+            const tip = e.target.closest && e.target.closest('.info-tip');
+            if (tip) posicionarTip(tip);
+        }, true);
+        document.addEventListener('focusin', (e) => {
+            const tip = e.target.closest && e.target.closest('.info-tip');
+            if (tip) posicionarTip(tip);
+        });
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.info-tip.is-open').forEach(posicionarTip);
+        });
+
+        document.addEventListener('click', (e) => {
+            const tip = e.target.closest('.info-tip');
+            if (tip) {
+                e.preventDefault();
+                const wasOpen = tip.classList.contains('is-open');
+                document.querySelectorAll('.info-tip.is-open').forEach(t => t.classList.remove('is-open'));
+                if (!wasOpen) {
+                    posicionarTip(tip);
+                    tip.classList.add('is-open');
+                }
+            } else {
+                document.querySelectorAll('.info-tip.is-open').forEach(t => t.classList.remove('is-open'));
+            }
+        });
+
         // ============= MODAL =============
+        function formatarRbt12(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (!v) { input.value = ''; popularModalReferencia(); return; }
+            v = (parseFloat(v) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            input.value = (v === 'NaN') ? '' : v;
+            popularModalReferencia();
+        }
+
+        function parseRbt12() {
+            const v = document.getElementById('rbt12Input').value.replace(/\D/g, '');
+            return v ? parseFloat(v) / 100 : 0;
+        }
+
+        function calcularEfetiva(row, rbt12) {
+            if (!rbt12 || rbt12 <= 0) return null;
+            const efetiva = ((rbt12 * (row.das / 100)) - row.pd) / rbt12 * 100;
+            return Math.max(0, efetiva);
+        }
+
         function popularModalReferencia() {
+            const rbt12 = parseRbt12();
             const tbody = document.getElementById('refTableBody');
-            tbody.innerHTML = ANEXO_III.map(row => `
+            const cardsBody = document.getElementById('refCardsBody');
+
+            // table (desktop)
+            tbody.innerHTML = ANEXO_III.map(row => {
+                const efetiva = calcularEfetiva(row, rbt12);
+                const efetivaStr = efetiva !== null
+                    ? `<strong style="color:var(--primary);">${efetiva.toFixed(2).replace('.',',')}%</strong>`
+                    : '<span style="color:var(--text-soft);">—</span>';
+                const consumoEfetivo = efetiva !== null ? efetiva * row.propConsumo : null;
+                const rendaEfetiva   = efetiva !== null ? efetiva * row.propRenda   : null;
+                const consumoStr = consumoEfetivo !== null ? consumoEfetivo.toFixed(2).replace('.',',') + '%' : '<span style="color:var(--text-soft);">—</span>';
+                const rendaStr   = rendaEfetiva   !== null ? rendaEfetiva.toFixed(2).replace('.',',')   + '%' : '<span style="color:var(--text-soft);">—</span>';
+                const applyBtn = consumoEfetivo !== null
+                    ? `<button class="apply-btn" onclick="aplicarFaixa(${consumoEfetivo.toFixed(4)}, ${rendaEfetiva.toFixed(4)})">Aplicar</button>`
+                    : `<button class="apply-btn" disabled title="Informe a receita bruta para habilitar">Aplicar</button>`;
+                return `
                 <tr>
                     <td>${row.faixa}</td>
-                    <td><strong>${row.das.toFixed(2).replace('.',',')}%</strong></td>
-                    <td>${row.consumo.toFixed(2).replace('.',',')}%</td>
-                    <td>${row.renda.toFixed(2).replace('.',',')}%</td>
-                    <td><button class="apply-btn" onclick="aplicarFaixa(${row.consumo}, ${row.renda})">Aplicar</button></td>
-                </tr>
-            `).join('');
+                    <td>${row.das.toFixed(2).replace('.',',')}%</td>
+                    <td>${efetivaStr}</td>
+                    <td>${consumoStr}</td>
+                    <td>${rendaStr}</td>
+                    <td>${applyBtn}</td>
+                </tr>`;
+            }).join('');
+
+            // cards (mobile)
+            cardsBody.innerHTML = ANEXO_III.map(row => {
+                const efetiva = calcularEfetiva(row, rbt12);
+                const consumoEfetivo = efetiva !== null ? efetiva * row.propConsumo : null;
+                const rendaEfetiva   = efetiva !== null ? efetiva * row.propRenda   : null;
+                const fmt = (v) => v === null ? '—' : v.toFixed(2).replace('.',',') + '%';
+                const applyBtn = consumoEfetivo !== null
+                    ? `<button class="apply-btn" onclick="aplicarFaixa(${consumoEfetivo.toFixed(4)}, ${rendaEfetiva.toFixed(4)})">Aplicar nesta faixa</button>`
+                    : `<button class="apply-btn" disabled>Informe a receita para aplicar</button>`;
+                return `
+                <div class="ref-card">
+                    <div class="ref-card-head">
+                        <span class="ref-card-faixa">${row.faixa}</span>
+                        <span class="ref-card-das">DAS ${row.das.toFixed(2).replace('.',',')}%</span>
+                    </div>
+                    <div class="ref-card-grid">
+                        <div class="ref-card-cell highlight">
+                            <div class="ref-card-cell-label">Efetiva</div>
+                            <div class="ref-card-cell-value">${fmt(efetiva)}</div>
+                        </div>
+                        <div class="ref-card-cell">
+                            <div class="ref-card-cell-label">Consumo</div>
+                            <div class="ref-card-cell-value">${fmt(consumoEfetivo)}</div>
+                        </div>
+                        <div class="ref-card-cell">
+                            <div class="ref-card-cell-label">Renda</div>
+                            <div class="ref-card-cell-value">${fmt(rendaEfetiva)}</div>
+                        </div>
+                    </div>
+                    ${applyBtn}
+                </div>`;
+            }).join('');
         }
+
+        function recalcularEfetivas() { popularModalReferencia(); }
+
         function abrirModalReferencia() {
             document.getElementById('modalReferencia').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -935,8 +1676,8 @@
             document.body.style.overflow = '';
         }
         function aplicarFaixa(consumo, renda) {
-            document.getElementById('aliqSimplesConsumo').value = consumo;
-            document.getElementById('aliqSimplesRenda').value = renda;
+            document.getElementById('aliqSimplesConsumo').value = parseFloat(consumo).toFixed(2);
+            document.getElementById('aliqSimplesRenda').value = parseFloat(renda).toFixed(2);
             atualizarTotalSimples();
             fecharModal();
         }
@@ -953,7 +1694,8 @@
             const p = parseFloat(document.getElementById('aliqPisCofins').value) || 0;
             const i = parseFloat(document.getElementById('aliqIcms').value) || 0;
             const s = parseFloat(document.getElementById('aliqIss').value) || 0;
-            document.getElementById('aliqTotalAtualDisplay').value = (p + i + s).toFixed(2) + '%';
+            const r = parseFloat(document.getElementById('aliqIrpjCsll').value) || 0;
+            document.getElementById('aliqTotalAtualDisplay').value = (p + i + s + r).toFixed(2) + '%';
             calcular();
         }
         function atualizarTotalFuturo() {
@@ -974,19 +1716,46 @@
                 divDetalhados.style.display = 'none';
                 divSimples.style.display = 'block';
                 boxSimplesFuturo.classList.add('active');
-                document.getElementById('aliqSimplesConsumo').focus();
             } else {
                 divDetalhados.style.display = 'block';
                 divSimples.style.display = 'none';
                 boxSimplesFuturo.classList.remove('active');
-                if (regime === 'presumido' && parseFloat(document.getElementById('aliqPisCofins').value) > 9) {
-                    document.getElementById('aliqPisCofins').value = '3.65';
-                } else if (regime === 'real' && parseFloat(document.getElementById('aliqPisCofins').value) < 4) {
-                    document.getElementById('aliqPisCofins').value = '9.25';
+                if (regime === 'presumido') {
+                    if (parseFloat(document.getElementById('aliqPisCofins').value) > 9)
+                        document.getElementById('aliqPisCofins').value = '3.65';
+                    document.getElementById('aliqIrpjCsll').value = '7.68';
+                    document.getElementById('helpIrpjCsll').textContent = 'Presunção 32% × (IRPJ 15% + CSLL 9%) — Lei 9.249/95 art. 15 §1º';
+                } else if (regime === 'real') {
+                    if (parseFloat(document.getElementById('aliqPisCofins').value) < 4)
+                        document.getElementById('aliqPisCofins').value = '9.25';
+                    document.getElementById('aliqIrpjCsll').value = '0';
+                    document.getElementById('helpIrpjCsll').textContent = 'Informe a alíquota efetiva sobre receita (IRPJ+CSLL/faturamento)';
                 }
                 atualizarTotalAtual();
             }
             calcular();
+        }
+
+        // ============= ESCALONAMENTO POR ANO (EC 132 / LC 214) =============
+        const FATOR_IBS_POR_ANO = { '2027': 0, '2029': 1/5, '2030': 2/5, '2031': 3/5, '2032': 4/5, '2033': 1 };
+        const HINTS_ANO = {
+            '2027': 'CBS pleno (8,8%). IBS ainda não vigente — apenas CBS impacta.',
+            '2029': 'IBS a 1/5 do pleno. CBS pleno. Impacto total menor que em 2033.',
+            '2030': 'IBS a 2/5 do pleno. CBS pleno.',
+            '2031': 'IBS a 3/5 do pleno. CBS pleno.',
+            '2032': 'IBS a 4/5 do pleno. CBS pleno. Último ano de transição.',
+            '2033': 'Regime pleno de 2033 selecionado — CBS e IBS em alíquotas máximas.'
+        };
+
+        function aplicarEscalonamentoAno() {
+            const ano = document.getElementById('anoReferencia').value;
+            const fatorIbs = FATOR_IBS_POR_ANO[ano] !== undefined ? FATOR_IBS_POR_ANO[ano] : 1;
+            const ibsInput = document.getElementById('aliqIbs');
+            const ibsPleno = parseFloat(ibsInput.dataset.pleno || ibsInput.value) || 17.7;
+            if (!ibsInput.dataset.pleno) ibsInput.dataset.pleno = ibsPleno;
+            ibsInput.value = parseFloat((ibsPleno * fatorIbs).toFixed(2));
+            document.getElementById('anoReferenciaHint').textContent = HINTS_ANO[ano] || '';
+            atualizarTotalFuturo();
         }
 
         // ============= CÁLCULO PRINCIPAL =============
@@ -999,18 +1768,14 @@
             const regimeLocadora = document.getElementById('regimeAtualLocadora').value;
             const regimeCliente = document.getElementById('regimeCliente').value;
 
-            // Aviso: Presumido não gera crédito
             const warnPresumido = document.getElementById('warningPresumido');
-            if (regimeLocadora === 'presumido' && regimeCliente === 'real_com_credito') {
-                warnPresumido.classList.add('active');
-            } else {
-                warnPresumido.classList.remove('active');
-            }
+            if (regimeLocadora === 'presumido') warnPresumido.classList.add('active');
+            else warnPresumido.classList.remove('active');
 
-            // --- ALÍQUOTA ATUAL ---
             let aliqTotalAtual = 0;
             let aliqSimplesConsumo = 0, aliqSimplesRenda = 0;
             let aliqPisCofinsAtual = 0;
+            let aliqIrpjCsllAtual = 0;
 
             if (regimeLocadora === 'simples') {
                 aliqSimplesConsumo = parseFloat(document.getElementById('aliqSimplesConsumo').value) || 0;
@@ -1020,20 +1785,18 @@
                 aliqPisCofinsAtual = parseFloat(document.getElementById('aliqPisCofins').value) || 0;
                 const icms = parseFloat(document.getElementById('aliqIcms').value) || 0;
                 const iss = parseFloat(document.getElementById('aliqIss').value) || 0;
-                aliqTotalAtual = aliqPisCofinsAtual + icms + iss;
+                aliqIrpjCsllAtual = parseFloat(document.getElementById('aliqIrpjCsll').value) || 0;
+                aliqTotalAtual = aliqPisCofinsAtual + icms + iss + aliqIrpjCsllAtual;
             }
 
-            // --- CRÉDITO PIS/COFINS HOJE (CORREÇÃO DE BUG) ---
-            // Crédito SÓ existe quando locadora está no Lucro Real E cliente é Real com crédito.
-            // Presumido tem PIS/COFINS cumulativo → não transfere crédito.
-            // Simples também não transfere crédito de PIS/COFINS hoje.
             let creditoPisCofinsHoje = 0;
             if (regimeLocadora === 'real' && regimeCliente === 'real_com_credito') {
                 creditoPisCofinsHoje = precoAtual * (aliqPisCofinsAtual / 100);
             }
             const custoEfetivoAtual = precoAtual - creditoPisCofinsHoje;
+            document.getElementById('lblCustoRealAtual').textContent =
+                creditoPisCofinsHoje > 0 ? 'Custo final do cliente (com crédito PIS/COFINS)' : 'Custo final do cliente (sem crédito PIS/COFINS)';
 
-            // --- PARÂMETROS REFORMA ---
             const cbsEst = parseFloat(document.getElementById('aliqCbs').value) || 0;
             const ibsEst = parseFloat(document.getElementById('aliqIbs').value) || 0;
             let aliqCbsAplicada = 0, aliqIbsAplicada = 0;
@@ -1043,8 +1806,6 @@
             if (regimeLocadora === 'simples') {
                 const estSimples = document.getElementById('regimeFuturoLocadoraSimples').value;
                 if (estSimples === 'simplificado') {
-                    // No Simplificado, CBS+IBS substituem a parcela consumo dentro do DAS
-                    // mas NÃO geram crédito para o cliente
                     aliqCbsAplicada = cbsEst; aliqIbsAplicada = ibsEst;
                     geraCreditoLocadora = false;
                     nomeRegimeFuturo = 'Simples Simplificado';
@@ -1059,15 +1820,37 @@
                 nomeRegimeFuturo = 'Regime Geral (IVA)';
             }
 
-            // --- CÁLCULO FUTURO ---
+            // --- GUARDS: alíquotas inválidas ---
+            const box = document.getElementById('boxAnalysis');
+            if (aliqTotalAtual >= 100) {
+                resWrapper.classList.add('active');
+                box.className = 'impact-hero tone-error';
+                box.innerHTML = `
+                    <div class="empty-state" style="color:var(--danger);">
+                        <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i>
+                        <div class="empty-title" style="color:var(--danger);">Alíquota inválida</div>
+                        <div class="empty-sub" style="color:var(--danger);">A alíquota total atual (${aliqTotalAtual.toFixed(2)}%) é maior ou igual a 100%. Corrija os campos para continuar.</div>
+                    </div>`;
+                return;
+            }
+            if (aliqSimplesRenda >= 100) {
+                resWrapper.classList.add('active');
+                box.className = 'impact-hero tone-error';
+                box.innerHTML = `
+                    <div class="empty-state" style="color:var(--danger);">
+                        <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i>
+                        <div class="empty-title" style="color:var(--danger);">Parcela Renda inválida</div>
+                        <div class="empty-sub" style="color:var(--danger);">A parcela Renda (${aliqSimplesRenda.toFixed(2)}%) é maior ou igual a 100%. Corrija o valor.</div>
+                    </div>`;
+                return;
+            }
+
             const impostoAtualValor = precoAtual * (aliqTotalAtual / 100);
             const receitaLiquida = precoAtual - impostoAtualValor;
             let precoFuturo = 0, impostoFuturoTotal = 0;
             let valorIVA = 0, valorIRPJCSLL = 0, baseSemIVA = 0;
 
             if (nomeRegimeFuturo === 'Simples Simplificado' || nomeRegimeFuturo === 'Simples Não Cumulativo') {
-                // Ambos: IRPJ/CSLL/CPP "por dentro"; IVA (CBS+IBS) "por fora"
-                // Simplificado: não gera crédito. Não Cumulativo: gera crédito.
                 const aliqRendaFrac = aliqSimplesRenda / 100;
                 const aliqIVAFrac = (aliqCbsAplicada + aliqIbsAplicada) / 100;
                 baseSemIVA = (aliqRendaFrac < 1) ? receitaLiquida / (1 - aliqRendaFrac) : receitaLiquida;
@@ -1076,14 +1859,14 @@
                 impostoFuturoTotal = valorIRPJCSLL + valorIVA;
                 precoFuturo = baseSemIVA + valorIVA;
             } else {
-                // Regime Geral (Real / Presumido): IVA por fora sobre receita líquida
-                baseSemIVA = receitaLiquida;
-                valorIVA = receitaLiquida * ((aliqCbsAplicada + aliqIbsAplicada) / 100);
-                impostoFuturoTotal = valorIVA;
-                precoFuturo = receitaLiquida + impostoFuturoTotal;
+                const aliqRendaFracGeral = aliqIrpjCsllAtual / 100;
+                baseSemIVA = (aliqRendaFracGeral < 1) ? receitaLiquida / (1 - aliqRendaFracGeral) : receitaLiquida;
+                valorIRPJCSLL = baseSemIVA - receitaLiquida;
+                valorIVA = baseSemIVA * ((aliqCbsAplicada + aliqIbsAplicada) / 100);
+                impostoFuturoTotal = valorIRPJCSLL + valorIVA;
+                precoFuturo = baseSemIVA + valorIVA;
             }
 
-            // --- CRÉDITO FUTURO ---
             const regimesQueTomamCredito = ['real_com_credito', 'real_sem_credito', 'presumido', 'simples_nc'];
             const clienteTomaCreditoFuturo = regimesQueTomamCredito.includes(regimeCliente);
             let valorCreditoFuturo = 0;
@@ -1092,7 +1875,7 @@
             }
             const custoRealFuturo = precoFuturo - valorCreditoFuturo;
 
-            // --- RENDERIZAÇÃO: HEADERS ---
+            // --- HEADERS ---
             const nomesLegiveisAtual = {
                 'presumido': 'Lucro Presumido',
                 'real': 'Lucro Real',
@@ -1101,47 +1884,52 @@
             document.getElementById('lblRegimeAtual').textContent = nomesLegiveisAtual[regimeLocadora] || regimeLocadora;
             document.getElementById('lblRegimeFuturo').textContent = nomeRegimeFuturo;
 
-            // --- RENDERIZAÇÃO: CENÁRIO ATUAL ---
+            // --- CENÁRIO ATUAL ---
             document.getElementById('resAtualTotal').textContent = formatMoney(precoAtual);
             document.getElementById('resAtualImposto').textContent = formatMoney(impostoAtualValor);
             document.getElementById('resAtualLiquido').textContent = formatMoney(receitaLiquida);
             document.getElementById('resCustoRealAtual').textContent = formatMoney(custoEfetivoAtual);
 
-            // --- RENDERIZAÇÃO: CENÁRIO FUTURO ---
+            // --- CENÁRIO FUTURO ---
             document.getElementById('resRefLiquido').textContent = formatMoney(receitaLiquida);
 
             const rowBaseSemIVA = document.getElementById('rowBaseSemIVA');
             const rowIrpjCsll = document.getElementById('rowIrpjCsll');
             const lblRefImposto = document.getElementById('lblRefImposto');
             const isSimples = (nomeRegimeFuturo === 'Simples Simplificado' || nomeRegimeFuturo === 'Simples Não Cumulativo');
+            const temRendaSeparada = valorIRPJCSLL > 0.001;
 
-            if (isSimples) {
-                // Mostra waterfall completo: Base → (-) Renda → Receita Líq → (+) IVA → Total
+            if (temRendaSeparada) {
                 rowBaseSemIVA.style.display = 'flex';
                 document.getElementById('resBaseSemIVA').textContent = formatMoney(baseSemIVA);
 
                 rowIrpjCsll.style.display = 'flex';
                 document.getElementById('resRefIrpjCsll').textContent = formatMoney(valorIRPJCSLL);
-                document.getElementById('lblIrpjCsll').innerHTML = '<i class="bi bi-dash-circle"></i> IRPJ/CSLL/CPP (por dentro)';
-
-                if (nomeRegimeFuturo === 'Simples Simplificado') {
-                    lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> Imposto sobre consumo (por fora, sem crédito)';
+                if (isSimples) {
+                    document.getElementById('lblIrpjCsll').innerHTML = '<i class="bi bi-dash-circle"></i> IRPJ/CSLL/CPP (por dentro)';
                 } else {
-                    lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> CBS + IBS (por fora, gera crédito)';
+                    document.getElementById('lblIrpjCsll').innerHTML = '<i class="bi bi-dash-circle"></i> IRPJ + CSLL (por dentro, permanece)';
                 }
-                document.getElementById('resRefImposto').textContent = formatMoney(valorIVA);
             } else {
-                // Regime Geral: layout simples
                 rowBaseSemIVA.style.display = 'none';
                 rowIrpjCsll.style.display = 'none';
-                lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> Impostos da reforma';
-                document.getElementById('resRefImposto').textContent = formatMoney(impostoFuturoTotal);
             }
+
+            if (nomeRegimeFuturo === 'Simples Simplificado') {
+                lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> Imposto sobre consumo (por fora, sem crédito)';
+            } else if (isSimples) {
+                lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> CBS + IBS (por fora, gera crédito)';
+            } else {
+                lblRefImposto.innerHTML = '<i class="bi bi-plus-circle"></i> CBS + IBS (por fora)';
+            }
+            document.getElementById('resRefImposto').textContent = formatMoney(valorIVA);
             document.getElementById('resRefTotal').textContent = formatMoney(precoFuturo);
 
-            // Disclaimer IVA: aparece quando há IVA > 0
             const disclaimer = document.getElementById('disclaimerIva');
             disclaimer.style.display = (valorIVA > 0) ? 'flex' : 'none';
+
+            const disclaimerSimplesSimp = document.getElementById('disclaimerSimplesSimp');
+            disclaimerSimplesSimp.style.display = (nomeRegimeFuturo === 'Simples Simplificado') ? 'flex' : 'none';
 
             // --- BADGE DE IMPACTO ---
             const impactBadge = document.getElementById('impactBadge');
@@ -1170,64 +1958,71 @@
                 impactBadge.style.display = 'none';
             }
 
-            // --- BOX DE NEGOCIAÇÃO ---
-            const box = document.getElementById('boxAnalysis');
+            // --- HERO BOX (negociação) ---
             if (precoAtual > 0) {
                 const diffCusto = custoRealFuturo - custoEfetivoAtual;
                 let percentualAumento = 0;
                 if (custoEfetivoAtual > 0) percentualAumento = (diffCusto / custoEfetivoAtual) * 100;
 
+                const avisoSimplesSim = (regimeCliente === 'simples_sim') ? `
+                    <div class="hero-notice notice-warn">
+                        <strong>⚠️ Crédito presumido pendente:</strong> o Simples Simplificado tem direito a crédito presumido de IVA (LC 214/2025), mas o percentual aguarda regulamentação. Esta simulação usa R$ 0,00 — o custo real tende a ser <em>menor</em>.
+                    </div>` : '';
+
+                const avisoRealSemCredito = (regimeCliente === 'real_sem_credito') ? `
+                    <div class="hero-notice notice-info">
+                        <strong>ℹ️ Uso/consumo na reforma:</strong> hoje este cliente não toma crédito de PIS/COFINS por enquadramento como uso/consumo. Na reforma, a LC 214/2025 elimina essa distinção — <em>todos os adquirentes passam a ter direito a crédito de IVA</em>.
+                    </div>` : '';
+
                 const demonstrativo = `
                     <div class="demonstrativo">
-                        <div class="demonstrativo-row"><span>Novo preço:</span><span>${formatMoney(precoFuturo)}</span></div>
-                        <div class="demonstrativo-row" style="color:${clienteTomaCreditoFuturo ? '#155724' : '#6b7280'};">
-                            <span>(-) Crédito IVA:</span>
-                            <span>${clienteTomaCreditoFuturo ? formatMoney(valorCreditoFuturo) : 'R$ 0,00'}</span>
-                        </div>
-                        <div class="demonstrativo-row total"><span>(=) Custo real:</span><span>${formatMoney(custoRealFuturo)}</span></div>
+                        <div class="demonstrativo-row"><span>Novo preço</span><span>${formatMoney(precoFuturo)}</span></div>
+                        <div class="demonstrativo-row"><span>(−) Crédito IVA</span><span>${clienteTomaCreditoFuturo ? formatMoney(valorCreditoFuturo) : formatMoney(0)}</span></div>
+                        <div class="demonstrativo-row total"><span>Custo real do cliente</span><span>${formatMoney(custoRealFuturo)}</span></div>
                     </div>
                 `;
 
                 if (diffCusto > 0.01) {
-                    box.style.backgroundColor = '#fff3cd';
-                    box.style.borderColor = '#ffecb5';
-                    box.style.color = '#856404';
+                    box.className = 'impact-hero tone-up';
                     box.innerHTML = `
+                        <div class="impact-eyebrow"><i class="bi bi-graph-up-arrow"></i> Impacto na negociação</div>
+                        <div class="impact-headline">O custo final do cliente subirá em</div>
+                        <div class="impact-number">+ ${formatMoney(diffCusto)}</div>
+                        <div class="impact-foot">${percentualAumento.toFixed(1).replace('.',',')}% de aumento real frente ao cenário atual</div>
                         ${demonstrativo}
-                        <span class="negotiation-title">⚠️ Impacto na negociação</span>
-                        <div style="font-size:.85em;">O custo final do cliente subirá</div>
-                        <div class="negotiation-value" style="color:#d32f2f;">+ ${formatMoney(diffCusto)}</div>
-                        <small style="color:#666;">${percentualAumento.toFixed(1)}% de aumento real</small>
+                        ${avisoSimplesSim}
+                        ${avisoRealSemCredito}
                     `;
                 } else if (diffCusto < -0.01) {
-                    box.style.backgroundColor = '#d4edda';
-                    box.style.borderColor = '#c3e6cb';
-                    box.style.color = '#155724';
+                    box.className = 'impact-hero tone-down';
                     box.innerHTML = `
+                        <div class="impact-eyebrow"><i class="bi bi-graph-down-arrow"></i> Argumento de venda</div>
+                        <div class="impact-headline">O custo final do cliente cairá em</div>
+                        <div class="impact-number">− ${formatMoney(Math.abs(diffCusto))}</div>
+                        <div class="impact-foot">Fica mais barato contratar você após a reforma</div>
                         ${demonstrativo}
-                        <span class="negotiation-title" style="color:#155724;">✅ Argumento de venda</span>
-                        <div style="font-size:.85em;">O custo final do cliente cairá</div>
-                        <div class="negotiation-value" style="color:#155724;">- ${formatMoney(Math.abs(diffCusto))}</div>
-                        <small style="color:#155724;">Fica mais barato contratar você</small>
+                        ${avisoSimplesSim}
+                        ${avisoRealSemCredito}
                     `;
                 } else {
-                    box.style.backgroundColor = '#d1ecf1';
-                    box.style.borderColor = '#bee5eb';
-                    box.style.color = '#0c5460';
+                    box.className = 'impact-hero tone-neutral';
                     box.innerHTML = `
+                        <div class="impact-eyebrow"><i class="bi bi-circle-half"></i> Impacto neutro</div>
+                        <div class="impact-headline">O custo para o cliente permanece</div>
+                        <div class="impact-number">${formatMoney(custoRealFuturo)}</div>
+                        <div class="impact-foot">Sem objeções de preço esperadas</div>
                         ${demonstrativo}
-                        <span class="negotiation-title" style="color:#0c5460;">⚖️ Impacto neutro</span>
-                        <div style="font-size:.85em;">O custo para o cliente permanece o mesmo</div>
-                        <div style="font-weight:700; margin-top:6px; color:#0c5460;">Sem objeções de preço</div>
+                        ${avisoSimplesSim}
+                        ${avisoRealSemCredito}
                     `;
                 }
             } else {
-                box.style.backgroundColor = 'var(--surface-alt)';
-                box.style.borderColor = 'var(--border)';
+                box.className = 'impact-hero empty';
                 box.innerHTML = `
                     <div class="empty-state">
                         <i class="bi bi-arrow-up-circle"></i>
-                        Preencha o valor da fatura para ver a análise
+                        <div class="empty-title">Aguardando dados</div>
+                        <div class="empty-sub">Preencha o valor da fatura para ver o impacto no custo do cliente.</div>
                     </div>
                 `;
             }
@@ -1242,7 +2037,7 @@
                 el.addEventListener('input', calcular);
                 el.addEventListener('change', calcular);
             });
-            ['aliqPisCofins', 'aliqIcms', 'aliqIss'].forEach(id => {
+            ['aliqPisCofins', 'aliqIcms', 'aliqIss', 'aliqIrpjCsll'].forEach(id => {
                 document.getElementById(id).addEventListener('input', atualizarTotalAtual);
             });
             ['aliqCbs', 'aliqIbs'].forEach(id => {
@@ -1253,9 +2048,8 @@
             });
 
             ajustarInterfaceRegime();
-            atualizarTotalFuturo();
+            aplicarEscalonamentoAno();
         });
     </script>
-
 </body>
 </html>
